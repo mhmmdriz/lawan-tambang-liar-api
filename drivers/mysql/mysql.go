@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"fmt"
+	"lawan-tambang-liar/entities"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -28,9 +29,12 @@ func ConnectDB(config Config) *gorm.DB {
 		panic(err)
 	}
 
-	MigrationUser(db)
+	Migration(db)
+
 	return db
 }
 
-func MigrationUser(db *gorm.DB) {
+func Migration(db *gorm.DB) {
+	db.AutoMigrate(&entities.Regency{})
+	db.AutoMigrate(&entities.District{})
 }
