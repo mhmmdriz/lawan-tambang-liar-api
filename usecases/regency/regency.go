@@ -26,3 +26,12 @@ func (u *RegencyUsecase) SeedRegencyDBFromAPI() ([]entities.Regency, error) {
 
 	return regencies, nil
 }
+
+func (u *RegencyUsecase) GetRegencyIDs() ([]string, error) {
+	regencyIDs, err := u.repository.GetRegencyIDs()
+	if err != nil {
+		return nil, err
+	}
+
+	return regencyIDs, nil
+}

@@ -2,17 +2,18 @@ package entities
 
 type District struct {
 	ID        string `json:"id" gorm:"primaryKey"`
-	RegencyID int    `json:"regency_id"`
+	RegencyID string `json:"regency_id" gorm:"foreignKey:RegencyID;references:ID;type:varchar;size:191"`
 	Name      string `json:"name"`
 }
 
 type DistrictRepositoryInterface interface {
-}
-
-type DistrictUsecaseInterface interface {
-	GetDistrictsAPI() ([]District, error)
+	AddDistrictsFromAPI(districts []District) error
 }
 
 type DistrictIndonesiaAreaAPIInterface interface {
-	GetDistrictsAPI() ([]District, error)
+	GetDistrictsDataFromAPI([]string) ([]District, error)
+}
+
+type DistrictUseCaseInterface interface {
+	SeedDistrictDBFromAPI([]string) ([]District, error)
 }

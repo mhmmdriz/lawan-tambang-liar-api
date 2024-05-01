@@ -8,12 +8,14 @@ type Regency struct {
 
 type RegencyRepositoryInterface interface {
 	AddRegenciesFromAPI(regencies []Regency) error
+	GetRegencyIDs() ([]string, error)
 }
 
 type RegencyIndonesiaAreaAPIInterface interface {
 	GetRegenciesDataFromAPI() ([]Regency, error)
 }
 
-type RegencyUsecaseInterface interface {
+type RegencyUseCaseInterface interface {
 	SeedRegencyDBFromAPI() ([]Regency, error)
+	GetRegencyIDs() ([]string, error)
 }

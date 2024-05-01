@@ -28,3 +28,12 @@ func (r *RegencyRepo) AddRegenciesFromAPI(regencies []entities.Regency) error {
 
 	return nil
 }
+
+func (r *RegencyRepo) GetRegencyIDs() ([]string, error) {
+	var regencyIDs []string
+	if err := r.DB.Model(&entities.Regency{}).Pluck("id", &regencyIDs).Error; err != nil {
+		return nil, err
+	}
+
+	return regencyIDs, nil
+}
