@@ -1,7 +1,9 @@
 package mysql
 
 import (
+	"errors"
 	"fmt"
+	"lawan-tambang-liar/drivers/indonesia_area_api/regency"
 	"lawan-tambang-liar/entities"
 
 	"gorm.io/driver/mysql"
@@ -29,7 +31,10 @@ func ConnectDB(config Config) *gorm.DB {
 		panic(err)
 	}
 
+	regencyAPI := regency.NewRegencyAPI()
+
 	Migration(db)
+	SeedRegencyFromAPI(db, regencyAPI)
 
 	return db
 }
@@ -37,4 +42,17 @@ func ConnectDB(config Config) *gorm.DB {
 func Migration(db *gorm.DB) {
 	db.AutoMigrate(&entities.Regency{})
 	db.AutoMigrate(&entities.District{})
+}
+
+func SeedRegencyFromAPI(db *gorm.DB, api entities.RegencyIndonesiaAreaAPIInterface) {
+	if err := db.First(&entities.Regency{}).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		regencies, err := api.GetRegenciesDataFromAPI()
+		if err != nil {
+			panic(err)
+		}
+
+		if err := db.CreateInBatches(regencies, len(regencies)).Error; err != nil {
+			panic(err)
+		}
+	}
 }
