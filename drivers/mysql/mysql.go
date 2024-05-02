@@ -45,6 +45,8 @@ func ConnectDB(config Config) *gorm.DB {
 func Migration(db *gorm.DB) {
 	db.AutoMigrate(&entities.Regency{})
 	db.AutoMigrate(&entities.District{})
+	db.AutoMigrate(&entities.User{})
+	db.AutoMigrate(&entities.Admin{})
 }
 
 func SeedRegencyFromAPI(db *gorm.DB, api entities.RegencyIndonesiaAreaAPIInterface) {
