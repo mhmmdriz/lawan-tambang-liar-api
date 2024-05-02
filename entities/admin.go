@@ -9,8 +9,8 @@ import (
 type Admin struct {
 	ID              int            `json:"id" gorm:"primaryKey"`
 	Name            string         `json:"name"`
-	RegencyID       int            `json:"regency_id"`
-	DistrictID      int            `json:"district_id"`
+	RegencyID       string         `json:"regency_id" gorm:"type:varchar;size:191"`
+	DistrictID      string         `json:"district_id" gorm:"type:varchar;size:191"`
 	Address         string         `json:"address"`
 	TelephoneNumber string         `json:"telephone_number"`
 	Email           string         `json:"email" gorm:"unique"`
@@ -18,6 +18,7 @@ type Admin struct {
 	Password        string         `json:"password"`
 	ProfilePhoto    string         `gorm:"default:images/default.jpg" json:"profile_photo"`
 	Token           string         `gorm:"-"`
+	IsSuperAdmin    bool           `json:"is_super_admin"`
 	CreatedAt       time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt       time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
@@ -26,11 +27,11 @@ type Admin struct {
 }
 
 type AdminRepositoryInterface interface {
-	Register(admin *Admin) error
+	CreateAccount(admin *Admin) error
 	Login(admin *Admin) error
 }
 
 type AdminUseCaseInterface interface {
-	Register(admin *Admin) (Admin, error)
+	CreateAccount(admin *Admin) (Admin, error)
 	Login(admin *Admin) (Admin, error)
 }

@@ -48,6 +48,7 @@ func (uc *UserController) Login(c echo.Context) error {
 	JwtToken.Value = user.Token
 	JwtToken.HttpOnly = true
 	JwtToken.Secure = true
+	JwtToken.Path = "/"
 	JwtToken.Expires = time.Now().Add(time.Hour * 1)
 	c.SetCookie(JwtToken)
 

@@ -2,16 +2,19 @@ package main
 
 import (
 	"lawan-tambang-liar/config"
+	admin_cl "lawan-tambang-liar/controllers/admin"
 	district_cl "lawan-tambang-liar/controllers/district"
 	regency_cl "lawan-tambang-liar/controllers/regency"
 	user_cl "lawan-tambang-liar/controllers/user"
 	district_api "lawan-tambang-liar/drivers/indonesia_area_api/district"
 	regency_api "lawan-tambang-liar/drivers/indonesia_area_api/regency"
 	"lawan-tambang-liar/drivers/mysql"
+	admin_rp "lawan-tambang-liar/drivers/mysql/admin"
 	district_rp "lawan-tambang-liar/drivers/mysql/district"
 	regency_rp "lawan-tambang-liar/drivers/mysql/regency"
 	user_rp "lawan-tambang-liar/drivers/mysql/user"
 	"lawan-tambang-liar/routes"
+	admin_uc "lawan-tambang-liar/usecases/admin"
 	district_uc "lawan-tambang-liar/usecases/district"
 	regency_uc "lawan-tambang-liar/usecases/regency"
 	user_uc "lawan-tambang-liar/usecases/user"
@@ -40,10 +43,15 @@ func main() {
 	userUsecase := user_uc.NewUserUseCase(userRepo)
 	UserController := user_cl.NewUserController(userUsecase)
 
+	adminRepo := admin_rp.NewAdminRepo(DB)
+	adminUsecase := admin_uc.NewAdminUseCase(adminRepo)
+	AdminController := admin_cl.NewAdminController(adminUsecase)
+
 	routes := routes.RouteController{
 		RegencyController:  RegencyController,
 		DistrictController: DistrictController,
 		UserController:     UserController,
+		AdminController:    AdminController,
 	}
 
 	routes.InitRoute(e)
