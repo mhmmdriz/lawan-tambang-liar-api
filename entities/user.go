@@ -1,20 +1,24 @@
 package entities
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type User struct {
-	ID              int       `json:"id" gorm:"primaryKey"`
-	Name            string    `json:"name"`
-	Address         string    `json:"address"`
-	TelephoneNumber string    `json:"telephone_number"`
-	Email           string    `json:"email"`
-	Username        string    `json:"username"`
-	Password        string    `json:"password,omitempty"`
-	ProfilePhoto    string    `gorm:"default:images/default.jpg" json:"profile_photo"`
-	Token           string    `gorm:"-"`
-	CreatedAt       time.Time `gorm:"autoCreateTime"`
-	UpdatedAt       time.Time `gorm:"autoUpdateTime"`
-	DeletedAt       time.Time
+	ID              int            `json:"id" gorm:"primaryKey"`
+	Name            string         `json:"name"`
+	Address         string         `json:"address"`
+	TelephoneNumber string         `json:"telephone_number"`
+	Email           string         `json:"email" gorm:"unique"`
+	Username        string         `json:"username" gorm:"unique"`
+	Password        string         `json:"password"`
+	ProfilePhoto    string         `gorm:"default:images/default.jpg" json:"profile_photo"`
+	Token           string         `gorm:"-"`
+	CreatedAt       time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt       time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt       gorm.DeletedAt `gorm:"index"`
 }
 
 type UserRepositoryInterface interface {
