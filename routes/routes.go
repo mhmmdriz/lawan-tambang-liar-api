@@ -5,6 +5,7 @@ import (
 	"lawan-tambang-liar/controllers/district"
 	"lawan-tambang-liar/controllers/regency"
 	"lawan-tambang-liar/controllers/user"
+	"lawan-tambang-liar/middlewares"
 	"os"
 
 	echojwt "github.com/labstack/echo-jwt"
@@ -20,23 +21,25 @@ type RouteController struct {
 }
 
 func (r *RouteController) InitRoute(e *echo.Echo) {
-	e.POST("/api/v1/seed-regency-db-from-api", r.RegencyController.SeedRegencyDBFromAPI)
-	e.POST("/api/v1/seed-district-db-from-api", r.DistrictController.SeedDistrictDBFromAPI)
-
-	e.POST("/api/v1/user/register", r.UserController.Register)
-	e.POST("/api/v1/user/login", r.UserController.Login)
-
-	e.POST("/api/v1/admin/create-account", r.AdminController.CreateAccount)
-	e.POST("/api/v1/admin/login", r.AdminController.Login)
-
-	jwtAuth := e.Group("/api/v1")
-	jwtAuth.Use(echojwt.WithConfig(echojwt.Config{
+	var jwtConfig = echojwt.Config{
 		SigningMethod: "HS256",
 		SigningKey:    []byte(os.Getenv("JWT_SECRET")),
 		TokenLookup:   "cookie:JwtToken",
-	}))
+	}
 
-	jwtAuth.GET("/test", func(c echo.Context) error {
-		return c.String(200, "Hello World")
-	})
+	superAdmin := e.Group("/api/v1/super-admin")
+	superAdmin.Use(echojwt.WithConfig(jwtConfig), middlewares.IsSuperAdmin)
+	superAdmin.POST("/create-account", r.AdminController.CreateAccount)
+
+	admin := e.Group("/api/v1/admin")
+	admin.POST("/login", r.AdminController.Login)
+	admin.Use(echojwt.WithConfig(jwtConfig), middlewares.IsAdmin)
+	admin.POST("/seed-regency-db-from-api", r.RegencyController.SeedRegencyDBFromAPI)
+	admin.POST("/seed-district-db-from-api", r.DistrictController.SeedDistrictDBFromAPI)
+
+	user := e.Group("/api/v1/user")
+	user.POST("/register", r.UserController.Register)
+	user.POST("/login", r.UserController.Login)
+	user.Use(echojwt.WithConfig(jwtConfig), middlewares.IsUser)
+
 }
