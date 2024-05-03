@@ -2,14 +2,14 @@ package response
 
 import "lawan-tambang-liar/entities"
 
-type RegisterResponse struct {
+type Register struct {
 	ID       int    `json:"id"`
 	Email    string `json:"email"`
 	Username string `json:"username"`
 }
 
-func FromUseCaseToRegisterResponse(user *entities.User) *RegisterResponse {
-	return &RegisterResponse{
+func RegisterFromEntitiesToResponse(user *entities.User) *Register {
+	return &Register{
 		ID:       user.ID,
 		Email:    user.Email,
 		Username: user.Username,

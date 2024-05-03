@@ -2,6 +2,7 @@ package user
 
 import (
 	"lawan-tambang-liar/controllers/base"
+	"lawan-tambang-liar/controllers/user/request"
 	"lawan-tambang-liar/controllers/user/response"
 	"lawan-tambang-liar/entities"
 	"lawan-tambang-liar/utils"
@@ -22,23 +23,23 @@ func NewUserController(userUseCase entities.UserUseCaseInterface) *UserControlle
 }
 
 func (uc *UserController) Register(c echo.Context) error {
-	var userRegister entities.User
-	c.Bind(&userRegister)
+	var userRequest request.Register
+	c.Bind(&userRequest)
 
-	user, err := uc.userUseCase.Register(&userRegister)
+	user, err := uc.userUseCase.Register(userRequest.ToEntities())
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
-	userResponse := response.FromUseCaseToRegisterResponse(&user)
+	userResponse := response.RegisterFromEntitiesToResponse(&user)
 
 	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Success Register", userResponse))
 }
 
 func (uc *UserController) Login(c echo.Context) error {
-	var userLogin entities.User
-	c.Bind(&userLogin)
+	var userRequest request.Login
+	c.Bind(&userRequest)
 
-	user, err := uc.userUseCase.Login(&userLogin)
+	user, err := uc.userUseCase.Login(userRequest.ToEntities())
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
@@ -52,6 +53,6 @@ func (uc *UserController) Login(c echo.Context) error {
 	JwtToken.Expires = time.Now().Add(time.Hour * 1)
 	c.SetCookie(JwtToken)
 
-	userResponse := response.FromUseCaseToLoginResponse(&user)
+	userResponse := response.LoginFromEntitiesToResponse(&user)
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Login", userResponse))
 }

@@ -7,11 +7,11 @@ import (
 )
 
 type User struct {
-	ID           int            `json:"id" gorm:"primaryKey"`
-	Username     string         `json:"username" gorm:"unique"`
-	Email        string         `json:"email" gorm:"unique"`
-	Password     string         `json:"password"`
-	ProfilePhoto string         `gorm:"default:profiles/default.jpg" json:"profile_photo"`
+	ID           int    `gorm:"primaryKey"`
+	Username     string `gorm:"unique"`
+	Email        string `gorm:"unique"`
+	Password     string
+	ProfilePhoto string         `gorm:"default:profiles/default.jpg"`
 	Token        string         `gorm:"-"`
 	CreatedAt    time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt    time.Time      `gorm:"autoUpdateTime"`

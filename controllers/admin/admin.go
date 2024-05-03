@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"lawan-tambang-liar/controllers/admin/request"
 	"lawan-tambang-liar/controllers/admin/response"
 	"lawan-tambang-liar/controllers/base"
 	"lawan-tambang-liar/entities"
@@ -22,23 +23,23 @@ func NewAdminController(adminUseCase entities.AdminUseCaseInterface) *AdminContr
 }
 
 func (ac *AdminController) CreateAccount(c echo.Context) error {
-	var admin entities.Admin
-	c.Bind(&admin)
+	var adminRequest request.CreateAccount
+	c.Bind(&adminRequest)
 
-	admin, err := ac.adminUseCase.CreateAccount(&admin)
+	admin, err := ac.adminUseCase.CreateAccount(adminRequest.ToEntities())
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
-	adminResponse := response.FromUseCaseToCreateAccountResponse(&admin)
+	adminResponse := response.CreateAccountFromEntitiesToResponse(&admin)
 
 	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Success Create Account", adminResponse))
 }
 
 func (ac *AdminController) Login(c echo.Context) error {
-	var admin entities.Admin
-	c.Bind(&admin)
+	var adminRequest request.Login
+	c.Bind(&adminRequest)
 
-	admin, err := ac.adminUseCase.Login(&admin)
+	admin, err := ac.adminUseCase.Login(adminRequest.ToEntities())
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
@@ -52,6 +53,6 @@ func (ac *AdminController) Login(c echo.Context) error {
 	JwtToken.Expires = time.Now().Add(time.Hour * 1)
 	c.SetCookie(JwtToken)
 
-	adminResponse := response.FromUseCaseToLoginResponse(&admin)
+	adminResponse := response.LoginFromEntitiesToResponse(&admin)
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Login", adminResponse))
 }

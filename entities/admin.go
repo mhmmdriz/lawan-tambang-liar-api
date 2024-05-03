@@ -7,17 +7,17 @@ import (
 )
 
 type Admin struct {
-	ID              int            `json:"id" gorm:"primaryKey"`
-	Username        string         `json:"username" gorm:"unique"`
-	RegencyID       string         `json:"regency_id" gorm:"type:varchar;size:191"`
-	DistrictID      string         `json:"district_id" gorm:"type:varchar;size:191"`
-	Address         string         `json:"address"`
-	TelephoneNumber string         `json:"telephone_number"`
-	Email           string         `json:"email" gorm:"unique"`
-	Password        string         `json:"password"`
+	ID              int    `gorm:"primaryKey"`
+	Username        string `gorm:"unique"`
+	RegencyID       string `gorm:"type:varchar;size:191"`
+	DistrictID      string `gorm:"type:varchar;size:191"`
+	Address         string
+	TelephoneNumber string
+	Email           string
+	Password        string
 	Token           string         `gorm:"-"`
-	IsSuperAdmin    bool           `json:"is_super_admin"`
-	ProfilePhoto    string         `gorm:"default:profiles/default.jpg" json:"profile_photo"`
+	IsSuperAdmin    bool           `gorm:"default:false"`
+	ProfilePhoto    string         `gorm:"default:profiles/default.jpg"`
 	CreatedAt       time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt       time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt       gorm.DeletedAt `gorm:"index"`

@@ -2,14 +2,14 @@ package response
 
 import "lawan-tambang-liar/entities"
 
-type LoginResponse struct {
+type Login struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`
 	Token    string `json:"token"`
 }
 
-func FromUseCaseToLoginResponse(admin *entities.Admin) *LoginResponse {
-	return &LoginResponse{
+func LoginFromEntitiesToResponse(admin *entities.Admin) *Login {
+	return &Login{
 		ID:       admin.ID,
 		Username: admin.Username,
 		Token:    admin.Token,
