@@ -12,7 +12,6 @@ type RegisterResponse struct {
 func FromUseCaseToRegisterResponse(user *entities.User) *RegisterResponse {
 	return &RegisterResponse{
 		ID:       user.ID,
-		Name:     user.Name,
 		Email:    user.Email,
 		Username: user.Username,
 	}

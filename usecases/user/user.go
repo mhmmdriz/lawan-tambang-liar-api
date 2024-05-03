@@ -17,7 +17,7 @@ func NewUserUseCase(repository entities.UserRepositoryInterface) *UserUseCase {
 }
 
 func (u *UserUseCase) Register(user *entities.User) (entities.User, error) {
-	if user.Name == "" || user.Email == "" || user.Password == "" || user.Username == "" {
+	if user.Email == "" || user.Password == "" || user.Username == "" {
 		return entities.User{}, errors.New("all fields must be filled")
 	}
 
@@ -37,7 +37,7 @@ func (u *UserUseCase) Login(user *entities.User) (entities.User, error) {
 
 	err := u.repository.Login(user)
 
-	(*user).Token = middlewares.GenerateTokenJWT(user.ID, user.Name, "user")
+	(*user).Token = middlewares.GenerateTokenJWT(user.ID, user.Username, "user")
 
 	if err != nil {
 		return entities.User{}, errors.New("invalid username or password")

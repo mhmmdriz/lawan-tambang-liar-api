@@ -39,7 +39,7 @@ func (r *UserRepo) Login(user *entities.User) error {
 	}
 
 	(*user).ID = userDB.ID
-	(*user).Name = userDB.Name
+	(*user).Username = userDB.Username
 
 	return nil
 }

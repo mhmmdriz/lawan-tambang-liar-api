@@ -39,7 +39,7 @@ func (r *AdminRepo) Login(admin *entities.Admin) error {
 	}
 
 	(*admin).ID = adminDB.ID
-	(*admin).Name = adminDB.Name
+	(*admin).Username = adminDB.Username
 	(*admin).IsSuperAdmin = adminDB.IsSuperAdmin
 
 	return nil

@@ -17,7 +17,7 @@ func NewAdminUseCase(repository entities.AdminRepositoryInterface) *AdminUseCase
 }
 
 func (u *AdminUseCase) CreateAccount(admin *entities.Admin) (entities.Admin, error) {
-	if admin.Name == "" || admin.Email == "" || admin.Password == "" || admin.Username == "" || admin.RegencyID == "" || admin.DistrictID == "" || admin.Address == "" {
+	if admin.Email == "" || admin.Password == "" || admin.Username == "" || admin.RegencyID == "" || admin.DistrictID == "" || admin.Address == "" {
 		return entities.Admin{}, errors.New("all fields must be filled")
 	}
 
@@ -38,9 +38,9 @@ func (u *AdminUseCase) Login(admin *entities.Admin) (entities.Admin, error) {
 	err := u.repository.Login(admin)
 
 	if admin.IsSuperAdmin {
-		(*admin).Token = middlewares.GenerateTokenJWT(admin.ID, admin.Name, "super_admin")
+		(*admin).Token = middlewares.GenerateTokenJWT(admin.ID, admin.Username, "super_admin")
 	} else {
-		(*admin).Token = middlewares.GenerateTokenJWT(admin.ID, admin.Name, "admin")
+		(*admin).Token = middlewares.GenerateTokenJWT(admin.ID, admin.Username, "admin")
 	}
 
 	if err != nil {
