@@ -31,7 +31,7 @@ func (uc *UserController) Register(c echo.Context) error {
 	}
 	userResponse := response.FromUseCaseToRegisterResponse(&user)
 
-	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Register", userResponse))
+	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Success Register", userResponse))
 }
 
 func (uc *UserController) Login(c echo.Context) error {

@@ -2,8 +2,10 @@ package admin
 
 import (
 	"errors"
+	"lawan-tambang-liar/constants"
 	"lawan-tambang-liar/entities"
 	"lawan-tambang-liar/middlewares"
+	"strings"
 )
 
 type AdminUseCase struct {
@@ -44,7 +46,15 @@ func (u *AdminUseCase) Login(admin *entities.Admin) (entities.Admin, error) {
 	}
 
 	if err != nil {
-		return entities.Admin{}, errors.New("invalid username or password")
+		if strings.HasPrefix(err.Error(), "Error 1062") {
+			if strings.HasSuffix(err.Error(), "email'") {
+				return entities.Admin{}, constants.ErrEmailAlreadyExist
+			} else if strings.HasSuffix(err.Error(), "username'") {
+				return entities.Admin{}, constants.ErrUsernameAlreadyExist
+			}
+		} else {
+			return entities.Admin{}, constants.ErrInternalServerError
+		}
 	}
 
 	return *admin, nil

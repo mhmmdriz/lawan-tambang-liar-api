@@ -31,7 +31,7 @@ func (ac *AdminController) CreateAccount(c echo.Context) error {
 	}
 	adminResponse := response.FromUseCaseToCreateAccountResponse(&admin)
 
-	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Create Account", adminResponse))
+	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Success Create Account", adminResponse))
 }
 
 func (ac *AdminController) Login(c echo.Context) error {

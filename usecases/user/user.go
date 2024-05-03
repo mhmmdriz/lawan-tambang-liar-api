@@ -1,9 +1,10 @@
 package user
 
 import (
-	"errors"
+	"lawan-tambang-liar/constants"
 	"lawan-tambang-liar/entities"
 	"lawan-tambang-liar/middlewares"
+	"strings"
 )
 
 type UserUseCase struct {
@@ -18,13 +19,21 @@ func NewUserUseCase(repository entities.UserRepositoryInterface) *UserUseCase {
 
 func (u *UserUseCase) Register(user *entities.User) (entities.User, error) {
 	if user.Email == "" || user.Password == "" || user.Username == "" {
-		return entities.User{}, errors.New("all fields must be filled")
+		return entities.User{}, constants.ErrAllFieldsMustBeFilled
 	}
 
 	err := u.repository.Register(user)
 
 	if err != nil {
-		return entities.User{}, err
+		if strings.HasPrefix(err.Error(), "Error 1062") {
+			if strings.HasSuffix(err.Error(), "email'") {
+				return entities.User{}, constants.ErrEmailAlreadyExist
+			} else if strings.HasSuffix(err.Error(), "username'") {
+				return entities.User{}, constants.ErrUsernameAlreadyExist
+			}
+		} else {
+			return entities.User{}, constants.ErrInternalServerError
+		}
 	}
 
 	return *user, nil
@@ -32,7 +41,7 @@ func (u *UserUseCase) Register(user *entities.User) (entities.User, error) {
 
 func (u *UserUseCase) Login(user *entities.User) (entities.User, error) {
 	if user.Username == "" || user.Password == "" {
-		return entities.User{}, errors.New("all fields must be filled")
+		return entities.User{}, constants.ErrAllFieldsMustBeFilled
 	}
 
 	err := u.repository.Login(user)
@@ -40,7 +49,7 @@ func (u *UserUseCase) Login(user *entities.User) (entities.User, error) {
 	(*user).Token = middlewares.GenerateTokenJWT(user.ID, user.Username, "user")
 
 	if err != nil {
-		return entities.User{}, errors.New("invalid username or password")
+		return entities.User{}, constants.ErrInvalidUsernameOrPassword
 	}
 
 	return *user, nil
