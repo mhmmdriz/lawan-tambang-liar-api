@@ -11,7 +11,7 @@ type User struct {
 	Username     string         `json:"username" gorm:"unique"`
 	Email        string         `json:"email" gorm:"unique"`
 	Password     string         `json:"password"`
-	ProfilePhoto string         `gorm:"default:images/default.jpg" json:"profile_photo"`
+	ProfilePhoto string         `gorm:"default:profiles/default.jpg" json:"profile_photo"`
 	Token        string         `gorm:"-"`
 	CreatedAt    time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt    time.Time      `gorm:"autoUpdateTime"`

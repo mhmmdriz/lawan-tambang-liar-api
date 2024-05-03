@@ -17,7 +17,7 @@ type Admin struct {
 	Password        string         `json:"password"`
 	Token           string         `gorm:"-"`
 	IsSuperAdmin    bool           `json:"is_super_admin"`
-	ProfilePhoto    string         `gorm:"default:images/default.jpg" json:"profile_photo"`
+	ProfilePhoto    string         `gorm:"default:profiles/default.jpg" json:"profile_photo"`
 	CreatedAt       time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt       time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
