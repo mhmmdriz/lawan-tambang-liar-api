@@ -33,12 +33,3 @@ func (r *RegencyController) SeedRegencyDBFromAPI(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Seeding Regencies Table Data from API", regencies_response))
 }
-
-// func (r *RegencyController) GetRegencyIDs() ([]string, error) {
-// 	regencyIDs, err := r.regencyUsecase.GetRegencyIDs()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return regencyIDs, nil
-// }
