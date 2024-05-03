@@ -39,6 +39,7 @@ func ConnectDB(config Config) *gorm.DB {
 	seeder.SeedRegencyFromAPI(db, regencyAPI)
 	seeder.SeedDistrictFromAPI(db, districtAPI)
 	seeder.SeedAdmin(db)
+	seeder.SeedUser(db)
 
 	return db
 }
