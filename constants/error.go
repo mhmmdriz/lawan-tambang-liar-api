@@ -11,4 +11,5 @@ var (
 	ErrUnauthorized              = errors.New("unauthorized")
 	ErrMaxFileSize               = errors.New("max file size is 10MB")
 	ErrMaxFileUpload             = errors.New("max file upload is 3")
+	ErrLimitAndPageMustBeFilled  = errors.New("limit and page must be filled")
 )

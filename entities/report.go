@@ -27,7 +27,7 @@ type Report struct {
 
 type ReportRepositoryInterface interface {
 	Create(report *Report) error
-	// GetPaginate(limit int, page int) ([]Report, error)
+	GetPaginated(limit int, page int, search string, filter map[string]interface{}, sort_by string, sort_type string) ([]Report, error)
 	// GetByID(id int) (Report, error)
 	// Update(id int) (Report, error)
 	// Delete(id int) (Report, error)
@@ -35,7 +35,7 @@ type ReportRepositoryInterface interface {
 
 type ReportUseCaseInterface interface {
 	Create(report *Report) (Report, error)
-	// GetPaginate(limit int, page int) ([]Report, error)
+	GetPaginated(limit int, page int, search string, filter map[string]interface{}, sort_by string, sort_type string) ([]Report, error)
 	// GetByID(id int) (Report, error)
 	// Update(id int) (Report, error)
 	// Delete(id int) (Report, error)

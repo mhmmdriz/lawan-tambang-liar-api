@@ -44,5 +44,6 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	user.POST("/login", r.UserController.Login)
 	user.Use(echojwt.WithConfig(jwtConfig), middlewares.IsUser)
 	user.POST("/report", r.ReportController.Create)
+	user.GET("/report", r.ReportController.GetPaginated)
 
 }

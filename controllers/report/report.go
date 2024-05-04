@@ -9,6 +9,7 @@ import (
 	"lawan-tambang-liar/entities"
 	"lawan-tambang-liar/utils"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -78,4 +79,59 @@ func (rc *ReportController) Create(c echo.Context) error {
 	reportResponse.Files = reportFileResponses
 
 	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Success Create Report", reportResponse))
+}
+
+func (rc *ReportController) GetPaginated(c echo.Context) error {
+	// Get limit, page, search query, and filter from query params
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	search := c.QueryParam("search")
+	filter_district, _ := strconv.Atoi(c.QueryParam("district"))
+	filter_regency, _ := strconv.Atoi(c.QueryParam("regency"))
+	filter_status := c.QueryParam("status")
+	filter := map[string]interface{}{}
+	if filter_district == 0 && filter_regency == 0 && filter_status == "" {
+		filter = nil
+	} else {
+		if filter_district != 0 {
+			filter["district_id"] = filter_district
+		}
+		if filter_regency != 0 {
+			filter["regency_id"] = filter_regency
+		}
+		if filter_status != "" {
+			filter["status"] = filter_status
+		}
+	}
+
+	sort_by := c.QueryParam("sort_by")
+	sort_type := c.QueryParam("sort_type")
+
+	report, err := rc.reportUseCase.GetPaginated(limit, page, search, filter, sort_by, sort_type)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	reportResponses := []*response_report.GetPaginate{}
+	var reportResponse *response_report.GetPaginate
+	var user, district, regency string
+	var reportFileResponse *response_report_file.ReportFile
+	for _, r := range report {
+		user = r.User.Username
+		district = r.District.Name
+		regency = r.Regency.Name
+		reportFileResponses := []string{}
+		for _, rf := range r.Files {
+			reportFileResponse = response_report_file.CreateFromEntitiesToResponse(&rf)
+			reportFileResponses = append(reportFileResponses, reportFileResponse.Path)
+		}
+		reportResponse = response_report.GetPaginateFromEntitiesToResponse(&r)
+		reportResponse.User = user
+		reportResponse.District = district
+		reportResponse.Regency = regency
+		reportResponse.Files = reportFileResponses
+		reportResponses = append(reportResponses, reportResponse)
+	}
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Paginate Report", reportResponses))
 }

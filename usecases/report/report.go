@@ -28,3 +28,17 @@ func (u *ReportUseCase) Create(report *entities.Report) (entities.Report, error)
 
 	return *report, nil
 }
+
+func (u *ReportUseCase) GetPaginated(limit int, page int, search string, filter map[string]interface{}, sort_by string, sort_type string) ([]entities.Report, error) {
+	if limit == 0 || page == 0 {
+		return nil, constants.ErrLimitAndPageMustBeFilled
+	}
+
+	reports, err := u.repository.GetPaginated(limit, page, search, filter, sort_by, sort_type)
+
+	if err != nil {
+		return nil, constants.ErrInternalServerError
+	}
+
+	return reports, nil
+}
