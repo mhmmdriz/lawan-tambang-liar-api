@@ -13,7 +13,7 @@ type Admin struct {
 	DistrictID      string `gorm:"type:varchar;size:191"`
 	Address         string
 	TelephoneNumber string
-	Email           string
+	Email           string `gorm:"unique"`
 	Password        string
 	Token           string         `gorm:"-"`
 	IsSuperAdmin    bool           `gorm:"default:false"`
