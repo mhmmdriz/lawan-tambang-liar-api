@@ -80,3 +80,17 @@ func (u *ReportUseCase) Delete(report_id int, user_id int) (entities.Report, err
 
 	return report, nil
 }
+
+func (u *ReportUseCase) AdminDelete(report_id int) (entities.Report, error) {
+	if report_id == 0 {
+		return entities.Report{}, constants.ErrIDMustBeFilled
+	}
+
+	report, err := u.repository.AdminDelete(report_id)
+
+	if err != nil {
+		return entities.Report{}, err
+	}
+
+	return report, nil
+}

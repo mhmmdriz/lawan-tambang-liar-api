@@ -31,6 +31,7 @@ type ReportRepositoryInterface interface {
 	GetByID(id int) (Report, error)
 	Update(report Report) (Report, error)
 	Delete(report_id int, user_id int) (Report, error)
+	AdminDelete(report_id int) (Report, error)
 }
 
 type ReportUseCaseInterface interface {
@@ -39,4 +40,5 @@ type ReportUseCaseInterface interface {
 	GetByID(id int) (Report, error)
 	Update(report Report) (Report, error)
 	Delete(report_id int, user_id int) (Report, error)
+	AdminDelete(report_id int) (Report, error)
 }

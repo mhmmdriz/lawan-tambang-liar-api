@@ -40,6 +40,7 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	admin.POST("/seed-district-db-from-api", r.DistrictController.SeedDistrictDBFromAPI)
 	admin.GET("/report", r.ReportController.GetPaginated)
 	admin.GET("/report/:id", r.ReportController.GetByID)
+	admin.DELETE("/report/:id", r.ReportController.AdminDelete)
 
 	user := e.Group("/api/v1/user")
 	user.POST("/register", r.UserController.Register)

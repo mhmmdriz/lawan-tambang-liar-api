@@ -256,3 +256,28 @@ func (rc *ReportController) Delete(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Delete Report", reportResponse))
 }
+
+func (rc *ReportController) AdminDelete(c echo.Context) error {
+	report_id, _ := strconv.Atoi(c.Param("id"))
+
+	report, err := rc.reportUseCase.AdminDelete(report_id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	reportResponse := response_report.DeleteFromEntitiesToResponse(&report)
+
+	reportFile, err2 := rc.reportFileUseCase.Delete(report_id)
+	if err2 != nil {
+		return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err2.Error()))
+	}
+
+	reportFileResponses := []*response_report_file.ReportFile{}
+	for _, rf := range reportFile {
+		reportFileResponses = append(reportFileResponses, response_report_file.FromEntitiesToResponse(&rf))
+	}
+
+	reportResponse.Files = reportFileResponses
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Delete Report", reportResponse))
+}

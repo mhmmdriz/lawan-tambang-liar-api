@@ -116,3 +116,22 @@ func (r *ReportRepo) Delete(report_id int, user_id int) (entities.Report, error)
 
 	return report, nil
 }
+
+func (r *ReportRepo) AdminDelete(report_id int) (entities.Report, error) {
+	var report entities.Report
+
+	// Soft delete report by marking it as inactive
+	if err := r.DB.First(&report, report_id).Error; err != nil {
+		return entities.Report{}, constants.ErrReportNotFound
+	}
+
+	// Set the 'deleted_at' field to the current time
+	report.DeletedAt = gorm.DeletedAt{Time: time.Now(), Valid: true}
+
+	// Update the report to mark it as deleted
+	if err := r.DB.Save(&report).Error; err != nil {
+		return entities.Report{}, constants.ErrInternalServerError
+	}
+
+	return report, nil
+}
