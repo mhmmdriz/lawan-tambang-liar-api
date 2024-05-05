@@ -102,3 +102,19 @@ func (rc *ReportSolutionProcessController) Create(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Success Create Report Solution Process", reportSolutionResponse))
 }
+
+func (rc *ReportSolutionProcessController) GetByReportID(c echo.Context) error {
+	report_id, _ := strconv.Atoi(c.Param("id"))
+
+	reportSolutionProcesses, err := rc.reportSolutionUseCase.GetByReportID(report_id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	reportSolutionProcessResponses := []*response_report_solution.GetByReportID{}
+	for _, rsp := range reportSolutionProcesses {
+		reportSolutionProcessResponses = append(reportSolutionProcessResponses, response_report_solution.GetByReportIDFromEntitiesToResponse(&rsp))
+	}
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Report Solution Process", reportSolutionProcessResponses))
+}

@@ -22,3 +22,13 @@ func (r *ReportSolutionProcessRepo) Create(reportSolutionProcess *entities.Repor
 	}
 	return nil
 }
+
+func (r *ReportSolutionProcessRepo) GetByReportID(reportID int) ([]entities.ReportSolutionProcess, error) {
+	var reportSolutionProcesses []entities.ReportSolutionProcess
+
+	if err := r.DB.Where("report_id = ?", reportID).Find(&reportSolutionProcesses).Error; err != nil {
+		return nil, err
+	}
+
+	return reportSolutionProcesses, nil
+}

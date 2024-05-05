@@ -43,6 +43,7 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	admin.GET("/report", r.ReportController.GetPaginated)
 	admin.GET("/report/:id", r.ReportController.GetByID)
 	admin.DELETE("/report/:id", r.ReportController.AdminDelete)
+	admin.GET("/report/:id/solution", r.ReportSolutionProcessController.GetByReportID)
 	admin.POST("/report/:id/solution/:action", r.ReportSolutionProcessController.Create)
 
 	user := e.Group("/api/v1/user")

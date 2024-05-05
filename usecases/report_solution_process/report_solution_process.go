@@ -28,3 +28,13 @@ func (u *ReportSolutionProcessUseCase) Create(reportSolutionProcess *entities.Re
 
 	return *reportSolutionProcess, nil
 }
+
+func (u *ReportSolutionProcessUseCase) GetByReportID(reportID int) ([]entities.ReportSolutionProcess, error) {
+	reportSolutionProcesses, err := u.repository.GetByReportID(reportID)
+
+	if err != nil {
+		return nil, constants.ErrInternalServerError
+	}
+
+	return reportSolutionProcesses, nil
+}

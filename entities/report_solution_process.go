@@ -20,14 +20,14 @@ type ReportSolutionProcess struct {
 
 type ReportSolutionProcessRepositoryInterface interface {
 	Create(reportSolutionProcess *ReportSolutionProcess) error
-	// GetByReportID(reportID int) ([]ReportSolutionProcess, error)
+	GetByReportID(reportID int) ([]ReportSolutionProcess, error)
 	// Delete(reportSolutionProcessID int) error
 	// Update(reportSolutionProcess *ReportSolutionProcess) error
 }
 
 type ReportSolutionProcessUseCaseInterface interface {
 	Create(reportSolutionProcess *ReportSolutionProcess) (ReportSolutionProcess, error)
-	// GetByReportID(reportID int) ([]ReportSolutionProcess, error)
+	GetByReportID(reportID int) ([]ReportSolutionProcess, error)
 	// Delete(reportSolutionProcessID int) error
 	// Update(reportSolutionProcess *ReportSolutionProcess) error
 }
