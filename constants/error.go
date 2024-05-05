@@ -12,4 +12,6 @@ var (
 	ErrMaxFileSize               = errors.New("max file size is 10MB")
 	ErrMaxFileUpload             = errors.New("max file upload is 3")
 	ErrLimitAndPageMustBeFilled  = errors.New("limit and page must be filled")
+	ErrIDMustBeFilled            = errors.New("id must be filled")
+	ErrReportNotFound            = errors.New("report not found")
 )

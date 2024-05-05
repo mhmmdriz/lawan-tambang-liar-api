@@ -18,12 +18,15 @@ type ReportFile struct {
 
 type ReportFileRepositoryInterface interface {
 	Create(reportFile []*ReportFile) error
+	Delete(report_id int) ([]ReportFile, error)
 }
 
 type ReportFileGCSAPIInterface interface {
 	UploadFile(files []*multipart.FileHeader) ([]string, error)
+	DeleteFile(reportFiles []ReportFile) error
 }
 
 type ReportFileUseCaseInterface interface {
 	Create(files []*multipart.FileHeader, report_id int) ([]ReportFile, error)
+	Delete(report_id int) ([]ReportFile, error)
 }

@@ -46,3 +46,18 @@ func (u *ReportFileUseCase) Create(files []*multipart.FileHeader, report_id int)
 
 	return convertedReportFiles, nil
 }
+
+func (u *ReportFileUseCase) Delete(report_id int) ([]entities.ReportFile, error) {
+	reportFiles, err := u.repository.Delete(report_id)
+
+	if err != nil {
+		return []entities.ReportFile{}, err
+	}
+
+	err_delete := u.gcs_api.DeleteFile(reportFiles)
+	if err_delete != nil {
+		return []entities.ReportFile{}, err_delete
+	}
+
+	return reportFiles, nil
+}

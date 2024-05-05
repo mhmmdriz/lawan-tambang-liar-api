@@ -30,7 +30,7 @@ type ReportRepositoryInterface interface {
 	GetPaginated(limit int, page int, search string, filter map[string]interface{}, sort_by string, sort_type string) ([]Report, error)
 	// GetByID(id int) (Report, error)
 	// Update(id int) (Report, error)
-	// Delete(id int) (Report, error)
+	Delete(report_id int, user_id int) (Report, error)
 }
 
 type ReportUseCaseInterface interface {
@@ -38,5 +38,5 @@ type ReportUseCaseInterface interface {
 	GetPaginated(limit int, page int, search string, filter map[string]interface{}, sort_by string, sort_type string) ([]Report, error)
 	// GetByID(id int) (Report, error)
 	// Update(id int) (Report, error)
-	// Delete(id int) (Report, error)
+	Delete(report_id int, user_id int) (Report, error)
 }

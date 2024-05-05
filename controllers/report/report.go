@@ -73,7 +73,7 @@ func (rc *ReportController) Create(c echo.Context) error {
 
 	reportFileResponses := []*response_report_file.ReportFile{}
 	for _, rf := range reportFile {
-		reportFileResponses = append(reportFileResponses, response_report_file.CreateFromEntitiesToResponse(&rf))
+		reportFileResponses = append(reportFileResponses, response_report_file.FromEntitiesToResponse(&rf))
 	}
 
 	reportResponse.Files = reportFileResponses
@@ -122,7 +122,7 @@ func (rc *ReportController) GetPaginated(c echo.Context) error {
 		regency = r.Regency.Name
 		reportFileResponses := []string{}
 		for _, rf := range r.Files {
-			reportFileResponse = response_report_file.CreateFromEntitiesToResponse(&rf)
+			reportFileResponse = response_report_file.FromEntitiesToResponse(&rf)
 			reportFileResponses = append(reportFileResponses, reportFileResponse.Path)
 		}
 		reportResponse = response_report.GetPaginateFromEntitiesToResponse(&r)
@@ -134,4 +134,34 @@ func (rc *ReportController) GetPaginated(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Paginate Report", reportResponses))
+}
+
+func (rc *ReportController) Delete(c echo.Context) error {
+	user_id, err := utils.GetUserIDFromJWT(c)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	report_id, _ := strconv.Atoi(c.Param("id"))
+
+	report, err := rc.reportUseCase.Delete(report_id, user_id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	reportResponse := response_report.DeleteFromEntitiesToResponse(&report)
+
+	reportFile, err2 := rc.reportFileUseCase.Delete(report_id)
+	if err2 != nil {
+		return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err2.Error()))
+	}
+
+	reportFileResponses := []*response_report_file.ReportFile{}
+	for _, rf := range reportFile {
+		reportFileResponses = append(reportFileResponses, response_report_file.FromEntitiesToResponse(&rf))
+	}
+
+	reportResponse.Files = reportFileResponses
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Delete Report", reportResponse))
 }

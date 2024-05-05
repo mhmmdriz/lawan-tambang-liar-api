@@ -45,5 +45,6 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	user.Use(echojwt.WithConfig(jwtConfig), middlewares.IsUser)
 	user.POST("/report", r.ReportController.Create)
 	user.GET("/report", r.ReportController.GetPaginated)
+	user.DELETE("/report/:id", r.ReportController.Delete)
 
 }

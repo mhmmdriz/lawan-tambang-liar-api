@@ -42,3 +42,17 @@ func (u *ReportUseCase) GetPaginated(limit int, page int, search string, filter 
 
 	return reports, nil
 }
+
+func (u *ReportUseCase) Delete(report_id int, user_id int) (entities.Report, error) {
+	if report_id == 0 {
+		return entities.Report{}, constants.ErrIDMustBeFilled
+	}
+
+	report, err := u.repository.Delete(report_id, user_id)
+
+	if err != nil {
+		return entities.Report{}, err
+	}
+
+	return report, nil
+}
