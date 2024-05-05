@@ -136,6 +136,32 @@ func (rc *ReportController) GetPaginated(c echo.Context) error {
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Paginate Report", reportResponses))
 }
 
+func (rc *ReportController) GetByID(c echo.Context) error {
+	report_id, _ := strconv.Atoi(c.Param("id"))
+
+	report, err := rc.reportUseCase.GetByID(report_id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	user := report.User.Username
+	district := report.District.Name
+	regency := report.Regency.Name
+	reportFileResponses := []string{}
+	for _, rf := range report.Files {
+		reportFileResponse := response_report_file.FromEntitiesToResponse(&rf)
+		reportFileResponses = append(reportFileResponses, reportFileResponse.Path)
+	}
+
+	reportResponse := response_report.GetPaginateFromEntitiesToResponse(&report)
+	reportResponse.User = user
+	reportResponse.District = district
+	reportResponse.Regency = regency
+	reportResponse.Files = reportFileResponses
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Report By ID", reportResponse))
+}
+
 func (rc *ReportController) Delete(c echo.Context) error {
 	user_id, err := utils.GetUserIDFromJWT(c)
 	if err != nil {

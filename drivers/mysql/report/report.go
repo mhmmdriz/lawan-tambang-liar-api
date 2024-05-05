@@ -54,6 +54,16 @@ func (r *ReportRepo) GetPaginated(limit int, page int, search string, filter map
 	return reports, nil
 }
 
+func (r *ReportRepo) GetByID(id int) (entities.Report, error) {
+	var report entities.Report
+
+	if err := r.DB.Preload("User").Preload("Regency").Preload("District").Preload("Files").First(&report, id).Error; err != nil {
+		return entities.Report{}, constants.ErrReportNotFound
+	}
+
+	return report, nil
+}
+
 func (r *ReportRepo) Delete(report_id int, user_id int) (entities.Report, error) {
 	var report entities.Report
 
