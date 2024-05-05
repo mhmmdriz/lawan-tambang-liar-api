@@ -4,6 +4,7 @@ import (
 	"lawan-tambang-liar/controllers/admin"
 	"lawan-tambang-liar/controllers/district"
 	"lawan-tambang-liar/controllers/regency"
+	"lawan-tambang-liar/controllers/report"
 	"lawan-tambang-liar/controllers/user"
 	"lawan-tambang-liar/middlewares"
 	"os"
@@ -18,6 +19,7 @@ type RouteController struct {
 	DistrictController *district.DistrictController
 	UserController     *user.UserController
 	AdminController    *admin.AdminController
+	ReportController   *report.ReportController
 }
 
 func (r *RouteController) InitRoute(e *echo.Echo) {
@@ -36,10 +38,18 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	admin.Use(echojwt.WithConfig(jwtConfig), middlewares.IsAdmin)
 	admin.POST("/seed-regency-db-from-api", r.RegencyController.SeedRegencyDBFromAPI)
 	admin.POST("/seed-district-db-from-api", r.DistrictController.SeedDistrictDBFromAPI)
+	admin.GET("/report", r.ReportController.GetPaginated)
+	admin.GET("/report/:id", r.ReportController.GetByID)
+	admin.DELETE("/report/:id", r.ReportController.AdminDelete)
 
 	user := e.Group("/api/v1/user")
 	user.POST("/register", r.UserController.Register)
 	user.POST("/login", r.UserController.Login)
 	user.Use(echojwt.WithConfig(jwtConfig), middlewares.IsUser)
+	user.POST("/report", r.ReportController.Create)
+	user.GET("/report", r.ReportController.GetPaginated)
+	user.GET("/report/:id", r.ReportController.GetByID)
+	user.DELETE("/report/:id", r.ReportController.Delete)
+	user.PUT("/report/:id/update", r.ReportController.Update)
 
 }
