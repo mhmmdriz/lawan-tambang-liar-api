@@ -14,4 +14,5 @@ var (
 	ErrLimitAndPageMustBeFilled  = errors.New("limit and page must be filled")
 	ErrIDMustBeFilled            = errors.New("id must be filled")
 	ErrReportNotFound            = errors.New("report not found")
+	ErrActionNotFound            = errors.New("action not found")
 )

@@ -1,0 +1,104 @@
+package report_solution_process
+
+import (
+	"lawan-tambang-liar/constants"
+	"lawan-tambang-liar/controllers/base"
+	"lawan-tambang-liar/controllers/report_solution_process/request"
+	response_report_solution "lawan-tambang-liar/controllers/report_solution_process/response"
+	response_report_solution_file "lawan-tambang-liar/controllers/report_solution_process_file/response"
+	"lawan-tambang-liar/entities"
+	"lawan-tambang-liar/utils"
+	"net/http"
+	"strconv"
+
+	"github.com/labstack/echo/v4"
+)
+
+type ReportSolutionProcessController struct {
+	reportUseCase             entities.ReportUseCaseInterface
+	reportSolutionUseCase     entities.ReportSolutionProcessUseCaseInterface
+	reportSolutionFileUseCase entities.ReportSolutionProcessFileUseCaseInterface
+}
+
+func NewReportSolutionProcessController(reportUseCase entities.ReportUseCaseInterface, reportSolutionUseCase entities.ReportSolutionProcessUseCaseInterface, reportSolutionFileUseCase entities.ReportSolutionProcessFileUseCaseInterface) *ReportSolutionProcessController {
+	return &ReportSolutionProcessController{
+		reportUseCase:             reportUseCase,
+		reportSolutionUseCase:     reportSolutionUseCase,
+		reportSolutionFileUseCase: reportSolutionFileUseCase,
+	}
+}
+
+func (rc *ReportSolutionProcessController) Create(c echo.Context) error {
+	admin_id, err := utils.GetUserIDFromJWT(c)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	var reportSolutionRequest request.Create
+	c.Bind(&reportSolutionRequest)
+
+	reportSolutionRequest.AdminID = admin_id
+	report_id, _ := strconv.Atoi(c.Param("id"))
+	reportSolutionRequest.ReportID = report_id
+	action := c.Param("action")
+	if action == "verify" {
+		reportSolutionRequest.Status = "verified"
+	} else if action == "reject" {
+		reportSolutionRequest.Status = "rejected"
+	} else if action == "progress" {
+		reportSolutionRequest.Status = "on progress"
+	} else if action == "done" {
+		reportSolutionRequest.Status = "done"
+	} else {
+		return c.JSON(utils.ConvertResponseCode(constants.ErrActionNotFound), base.NewErrorResponse(constants.ErrActionNotFound.Error()))
+	}
+
+	// Parse form-data multipart
+	form, err2 := c.MultipartForm()
+	if err2 != nil {
+		return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err2.Error()))
+	}
+
+	// Mengambil semua file yang diunggah
+	files := form.File["files"]
+
+	if len(files) > 3 {
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse(constants.ErrMaxFileUpload.Error()))
+	}
+
+	// Count total file size
+	totalFileSize := 0
+	for _, file := range files {
+		totalFileSize += int(file.Size)
+	}
+
+	if totalFileSize > 10*1024*1024 {
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse(constants.ErrMaxFileSize.Error()))
+	}
+
+	err3 := rc.reportUseCase.UpdateStatus(report_id, reportSolutionRequest.Status)
+	if err3 != nil {
+		return c.JSON(utils.ConvertResponseCode(err3), base.NewErrorResponse(err3.Error()))
+	}
+
+	reportSolution, err4 := rc.reportSolutionUseCase.Create(reportSolutionRequest.ToEntities())
+	if err4 != nil {
+		return c.JSON(utils.ConvertResponseCode(err4), base.NewErrorResponse(err4.Error()))
+	}
+
+	reportSolutionResponse := response_report_solution.CreateFromEntitiesToResponse(&reportSolution)
+
+	reportSolutionFile, err5 := rc.reportSolutionFileUseCase.Create(files, reportSolution.ID)
+	if err5 != nil {
+		return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err5.Error()))
+	}
+
+	reportSolutionFileResponses := []*response_report_solution_file.ReportSolutionProcessFile{}
+	for _, rf := range reportSolutionFile {
+		reportSolutionFileResponses = append(reportSolutionFileResponses, response_report_solution_file.FromEntitiesToResponse(&rf))
+	}
+
+	reportSolutionResponse.Files = reportSolutionFileResponses
+
+	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Success Create Report Solution Process", reportSolutionResponse))
+}

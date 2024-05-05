@@ -6,6 +6,7 @@ import (
 	district_cl "lawan-tambang-liar/controllers/district"
 	regency_cl "lawan-tambang-liar/controllers/regency"
 	report_cl "lawan-tambang-liar/controllers/report"
+	report_solution_cl "lawan-tambang-liar/controllers/report_solution_process"
 	user_cl "lawan-tambang-liar/controllers/user"
 	upload_file_gcs_api "lawan-tambang-liar/drivers/google_cloud_storage"
 	district_api "lawan-tambang-liar/drivers/indonesia_area_api/district"
@@ -16,6 +17,8 @@ import (
 	regency_rp "lawan-tambang-liar/drivers/mysql/regency"
 	report_rp "lawan-tambang-liar/drivers/mysql/report"
 	report_file_rp "lawan-tambang-liar/drivers/mysql/report_file"
+	report_solution_rp "lawan-tambang-liar/drivers/mysql/report_solution_process"
+	report_solution_file_rp "lawan-tambang-liar/drivers/mysql/report_solution_process_file"
 	user_rp "lawan-tambang-liar/drivers/mysql/user"
 	"lawan-tambang-liar/routes"
 	admin_uc "lawan-tambang-liar/usecases/admin"
@@ -23,6 +26,8 @@ import (
 	regency_uc "lawan-tambang-liar/usecases/regency"
 	report_uc "lawan-tambang-liar/usecases/report"
 	report_file_uc "lawan-tambang-liar/usecases/report_file"
+	report_solution_uc "lawan-tambang-liar/usecases/report_solution_process"
+	report_solution_file_uc "lawan-tambang-liar/usecases/report_solution_process_file"
 	user_uc "lawan-tambang-liar/usecases/user"
 
 	"github.com/labstack/echo/v4"
@@ -60,12 +65,20 @@ func main() {
 	reportUsecase := report_uc.NewReportUseCase(reportRepo)
 	ReportController := report_cl.NewReportController(reportUsecase, reportFileUseCase)
 
+	reportSolutionFileRepo := report_solution_file_rp.NewReportSolutionProcessFileRepo(DB)
+	uploadFileReportSolutionGCSAPI := upload_file_gcs_api.NewFileUploadAPI("report_solution_files/")
+	reportSolutionFileUseCase := report_solution_file_uc.NewReportSolutionProcessFileUsecase(reportSolutionFileRepo, uploadFileReportSolutionGCSAPI)
+	reportSolutionRepo := report_solution_rp.NewReportSolutionProcessRepo(DB)
+	reportSolutionUsecase := report_solution_uc.NewReportSolutionProcessUseCase(reportSolutionRepo)
+	ReportSolutionProcessController := report_solution_cl.NewReportSolutionProcessController(reportUsecase, reportSolutionUsecase, reportSolutionFileUseCase)
+
 	routes := routes.RouteController{
-		RegencyController:  RegencyController,
-		DistrictController: DistrictController,
-		UserController:     UserController,
-		AdminController:    AdminController,
-		ReportController:   ReportController,
+		RegencyController:               RegencyController,
+		DistrictController:              DistrictController,
+		UserController:                  UserController,
+		AdminController:                 AdminController,
+		ReportController:                ReportController,
+		ReportSolutionProcessController: ReportSolutionProcessController,
 	}
 
 	routes.InitRoute(e)
