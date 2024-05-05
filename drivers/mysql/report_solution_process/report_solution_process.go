@@ -2,6 +2,7 @@ package report_solution_process
 
 import (
 	"lawan-tambang-liar/entities"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -31,4 +32,21 @@ func (r *ReportSolutionProcessRepo) GetByReportID(reportID int) ([]entities.Repo
 	}
 
 	return reportSolutionProcesses, nil
+}
+
+func (r *ReportSolutionProcessRepo) Delete(reportSolutionProcessID int) (entities.ReportSolutionProcess, error) {
+	var reportSolutionProcess entities.ReportSolutionProcess
+
+	// Soft delete
+	if err := r.DB.First(&reportSolutionProcess, reportSolutionProcessID).Error; err != nil {
+		return entities.ReportSolutionProcess{}, err
+	}
+
+	reportSolutionProcess.DeletedAt = gorm.DeletedAt{Time: time.Now(), Valid: true}
+
+	if err := r.DB.Save(&reportSolutionProcess).Error; err != nil {
+		return entities.ReportSolutionProcess{}, err
+	}
+
+	return reportSolutionProcess, nil
 }

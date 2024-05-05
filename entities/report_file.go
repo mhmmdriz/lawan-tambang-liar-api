@@ -23,7 +23,7 @@ type ReportFileRepositoryInterface interface {
 
 type ReportFileGCSAPIInterface interface {
 	UploadFile(files []*multipart.FileHeader) ([]string, error)
-	DeleteFile(reportFiles []ReportFile) error
+	DeleteFile(filePaths []string) error
 }
 
 type ReportFileUseCaseInterface interface {

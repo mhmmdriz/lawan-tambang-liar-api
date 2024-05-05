@@ -18,15 +18,15 @@ type ReportSolutionProcessFile struct {
 
 type ReportSolutionProcessFileRepositoryInterface interface {
 	Create(reportSolutionProcessFile []*ReportSolutionProcessFile) error
-	// Delete(reportSolutionProcessID int) ([]ReportSolutionProcessFile, error)
+	Delete(reportSolutionProcessID int) ([]ReportSolutionProcessFile, error)
 }
 
 type ReportSolutionProcessFileGCSAPIInterface interface {
 	UploadFile(files []*multipart.FileHeader) ([]string, error)
-	// DeleteFile(reportSolutionProcessFile []ReportSolutionProcessFile) error
+	DeleteFile(filePaths []string) error
 }
 
 type ReportSolutionProcessFileUseCaseInterface interface {
 	Create(files []*multipart.FileHeader, reportSolutionProcessID int) ([]ReportSolutionProcessFile, error)
-	// Delete(reportSolutionProcessID int) ([]ReportSolutionProcessFile, error)
+	Delete(reportSolutionProcessID int) ([]ReportSolutionProcessFile, error)
 }

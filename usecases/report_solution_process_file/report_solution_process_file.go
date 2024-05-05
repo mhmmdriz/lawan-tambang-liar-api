@@ -46,3 +46,23 @@ func (u *ReportSolutionProcessFileUsecase) Create(files []*multipart.FileHeader,
 
 	return convertedReportFiles, nil
 }
+
+func (u *ReportSolutionProcessFileUsecase) Delete(reportSolutionProcessID int) ([]entities.ReportSolutionProcessFile, error) {
+	reportFiles, err := u.repository.Delete(reportSolutionProcessID)
+
+	if err != nil {
+		return []entities.ReportSolutionProcessFile{}, err
+	}
+
+	var filePaths []string
+	for _, file := range reportFiles {
+		filePaths = append(filePaths, file.Path)
+	}
+
+	err_delete := u.gcs_api.DeleteFile(filePaths)
+	if err_delete != nil {
+		return []entities.ReportSolutionProcessFile{}, err_delete
+	}
+
+	return reportFiles, nil
+}

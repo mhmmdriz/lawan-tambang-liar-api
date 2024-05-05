@@ -38,3 +38,13 @@ func (u *ReportSolutionProcessUseCase) GetByReportID(reportID int) ([]entities.R
 
 	return reportSolutionProcesses, nil
 }
+
+func (u *ReportSolutionProcessUseCase) Delete(reportSolutionProcessID int) (entities.ReportSolutionProcess, error) {
+	reportSolutionProcess, err := u.repository.Delete(reportSolutionProcessID)
+
+	if err != nil {
+		return entities.ReportSolutionProcess{}, err
+	}
+
+	return reportSolutionProcess, nil
+}

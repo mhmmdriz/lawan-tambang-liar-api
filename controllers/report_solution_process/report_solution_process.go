@@ -118,3 +118,45 @@ func (rc *ReportSolutionProcessController) GetByReportID(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Report Solution Process", reportSolutionProcessResponses))
 }
+
+func (rc *ReportSolutionProcessController) Delete(c echo.Context) error {
+	report_id, _ := strconv.Atoi(c.Param("id"))
+	report_solution_id, _ := strconv.Atoi(c.Param("solution_id"))
+
+	reportSolutionProcess, err := rc.reportSolutionUseCase.Delete(report_solution_id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	reportSolutionProcessResponse := response_report_solution.DeleteFromEntitiesToResponse(&reportSolutionProcess)
+
+	var updatedStatus string
+	if reportSolutionProcess.Status == "verified" {
+		updatedStatus = "pending"
+	} else if reportSolutionProcess.Status == "rejected" {
+		updatedStatus = "pending"
+	} else if reportSolutionProcess.Status == "on progress" {
+		updatedStatus = "verified"
+	} else if reportSolutionProcess.Status == "done" {
+		updatedStatus = "on progress"
+	}
+
+	err2 := rc.reportUseCase.UpdateStatus(report_id, updatedStatus)
+	if err2 != nil {
+		return c.JSON(utils.ConvertResponseCode(err2), base.NewErrorResponse(err2.Error()))
+	}
+
+	reportSolutionFile, err3 := rc.reportSolutionFileUseCase.Delete(report_solution_id)
+	if err3 != nil {
+		return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err3.Error()))
+	}
+
+	reportSolutionFileResponses := []*response_report_solution_file.ReportSolutionProcessFile{}
+	for _, rf := range reportSolutionFile {
+		reportSolutionFileResponses = append(reportSolutionFileResponses, response_report_solution_file.FromEntitiesToResponse(&rf))
+	}
+
+	reportSolutionProcessResponse.Files = reportSolutionFileResponses
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Delete Report Solution Process", reportSolutionProcessResponse))
+}

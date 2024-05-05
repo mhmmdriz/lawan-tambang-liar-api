@@ -54,7 +54,12 @@ func (u *ReportFileUseCase) Delete(report_id int) ([]entities.ReportFile, error)
 		return []entities.ReportFile{}, err
 	}
 
-	err_delete := u.gcs_api.DeleteFile(reportFiles)
+	var filePaths []string
+	for _, file := range reportFiles {
+		filePaths = append(filePaths, file.Path)
+	}
+
+	err_delete := u.gcs_api.DeleteFile(filePaths)
 	if err_delete != nil {
 		return []entities.ReportFile{}, err_delete
 	}
