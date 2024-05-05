@@ -162,6 +162,71 @@ func (rc *ReportController) GetByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Report By ID", reportResponse))
 }
 
+func (rc *ReportController) Update(c echo.Context) error {
+	user_id, err := utils.GetUserIDFromJWT(c)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	report_id, _ := strconv.Atoi(c.Param("id"))
+
+	var reportRequest request.Update
+	c.Bind(&reportRequest)
+	reportRequest.UserID = user_id
+	reportRequest.ID = report_id
+
+	// Parse form-data multipart
+	form, err := c.MultipartForm()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err.Error()))
+	}
+
+	report, err := rc.reportUseCase.Update(*reportRequest.ToEntities())
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	reportResponse := response_report.UpdateFromEntitiesToResponse(&report)
+
+	// Mengambil semua file yang diunggah
+	files := form.File["files"]
+	if len(files) != 0 {
+		if len(files) > 3 {
+			return c.JSON(http.StatusBadRequest, base.NewErrorResponse(constants.ErrMaxFileUpload.Error()))
+		}
+
+		// Count total file size
+		totalFileSize := 0
+		for _, file := range files {
+			totalFileSize += int(file.Size)
+		}
+
+		if totalFileSize > 10*1024*1024 {
+			return c.JSON(http.StatusBadRequest, base.NewErrorResponse(constants.ErrMaxFileSize.Error()))
+		}
+
+		_, err2 := rc.reportFileUseCase.Delete(report_id)
+		if err2 != nil {
+			return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err2.Error()))
+		}
+
+		reportFile, err3 := rc.reportFileUseCase.Create(files, report_id)
+		if err3 != nil {
+			return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err3.Error()))
+		}
+
+		reportFileResponses := []*response_report_file.ReportFile{}
+		for _, rf := range reportFile {
+			reportFileResponses = append(reportFileResponses, response_report_file.FromEntitiesToResponse(&rf))
+		}
+
+		reportResponse.Files = reportFileResponses
+	}
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Update Report", reportResponse))
+
+}
+
 func (rc *ReportController) Delete(c echo.Context) error {
 	user_id, err := utils.GetUserIDFromJWT(c)
 	if err != nil {

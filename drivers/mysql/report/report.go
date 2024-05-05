@@ -64,6 +64,35 @@ func (r *ReportRepo) GetByID(id int) (entities.Report, error) {
 	return report, nil
 }
 
+func (r *ReportRepo) Update(report entities.Report) (entities.Report, error) {
+	// Check if the report exists
+	var reportDB entities.Report
+
+	if err := r.DB.First(&reportDB, report.ID).Error; err != nil {
+		return entities.Report{}, constants.ErrReportNotFound
+	}
+
+	// Check if the user is the owner of the report
+	if reportDB.UserID != report.UserID {
+		return entities.Report{}, constants.ErrUnauthorized
+	}
+
+	reportDB.Title = report.Title
+	reportDB.Description = report.Description
+	reportDB.RegencyID = report.RegencyID
+	reportDB.DistrictID = report.DistrictID
+	reportDB.Address = report.Address
+
+	// Update the report
+	if err := r.DB.Save(&reportDB).Error; err != nil {
+		return entities.Report{}, constants.ErrInternalServerError
+	}
+
+	report.Status = reportDB.Status
+
+	return report, nil
+}
+
 func (r *ReportRepo) Delete(report_id int, user_id int) (entities.Report, error) {
 	var report entities.Report
 

@@ -53,6 +53,20 @@ func (u *ReportUseCase) GetByID(id int) (entities.Report, error) {
 	return report, nil
 }
 
+func (u *ReportUseCase) Update(report entities.Report) (entities.Report, error) {
+	if report.ID == 0 {
+		return entities.Report{}, constants.ErrIDMustBeFilled
+	}
+
+	report, err := u.repository.Update(report)
+
+	if err != nil {
+		return entities.Report{}, err
+	}
+
+	return report, nil
+}
+
 func (u *ReportUseCase) Delete(report_id int, user_id int) (entities.Report, error) {
 	if report_id == 0 {
 		return entities.Report{}, constants.ErrIDMustBeFilled

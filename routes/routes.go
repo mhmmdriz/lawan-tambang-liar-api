@@ -49,5 +49,6 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	user.GET("/report", r.ReportController.GetPaginated)
 	user.GET("/report/:id", r.ReportController.GetByID)
 	user.DELETE("/report/:id", r.ReportController.Delete)
+	user.PUT("/report/:id/update", r.ReportController.Update)
 
 }
