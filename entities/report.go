@@ -14,7 +14,7 @@ type Report struct {
 	RegencyID   string `gorm:"type:varchar;size:191"`
 	DistrictID  string `gorm:"type:varchar;size:191"`
 	Address     string
-	Status      string `gorm:"default:'verification';type:enum('verification', 'on progress', 'done', 'rejected')"`
+	Status      string `gorm:"default:'pending';type:enum('pending', 'verification', 'on progress', 'done', 'rejected')"`
 	Upvotes     int
 	CreatedAt   time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
