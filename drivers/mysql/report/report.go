@@ -135,3 +135,20 @@ func (r *ReportRepo) AdminDelete(report_id int) (entities.Report, error) {
 
 	return report, nil
 }
+
+func (r *ReportRepo) UpdateStatus(report_id int, status string) error {
+	var report entities.Report
+
+	// Update the status of the report
+	if err := r.DB.First(&report, report_id).Error; err != nil {
+		return constants.ErrReportNotFound
+	}
+
+	report.Status = status
+
+	if err := r.DB.Save(&report).Error; err != nil {
+		return constants.ErrInternalServerError
+	}
+
+	return nil
+}

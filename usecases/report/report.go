@@ -94,3 +94,17 @@ func (u *ReportUseCase) AdminDelete(report_id int) (entities.Report, error) {
 
 	return report, nil
 }
+
+func (u *ReportUseCase) UpdateStatus(report_id int, status string) error {
+	if report_id == 0 {
+		return constants.ErrIDMustBeFilled
+	}
+
+	err := u.repository.UpdateStatus(report_id, status)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

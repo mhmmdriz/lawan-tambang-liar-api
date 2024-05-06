@@ -14,7 +14,7 @@ type Report struct {
 	RegencyID   string `gorm:"type:varchar;size:191"`
 	DistrictID  string `gorm:"type:varchar;size:191"`
 	Address     string
-	Status      string `gorm:"default:'verification';type:enum('verification', 'on progress', 'done', 'rejected')"`
+	Status      string `gorm:"default:'pending';type:enum('pending', 'verified', 'on progress', 'done', 'rejected')"`
 	Upvotes     int
 	CreatedAt   time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
@@ -32,6 +32,7 @@ type ReportRepositoryInterface interface {
 	Update(report Report) (Report, error)
 	Delete(report_id int, user_id int) (Report, error)
 	AdminDelete(report_id int) (Report, error)
+	UpdateStatus(report_id int, status string) error
 }
 
 type ReportUseCaseInterface interface {
@@ -41,4 +42,5 @@ type ReportUseCaseInterface interface {
 	Update(report Report) (Report, error)
 	Delete(report_id int, user_id int) (Report, error)
 	AdminDelete(report_id int) (Report, error)
+	UpdateStatus(report_id int, status string) error
 }

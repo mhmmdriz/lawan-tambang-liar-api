@@ -3,7 +3,6 @@ package google_cloud_storage
 import (
 	"context"
 	"io"
-	"lawan-tambang-liar/entities"
 	"lawan-tambang-liar/utils"
 	"mime/multipart"
 	"os"
@@ -64,7 +63,7 @@ func (f *FileUploadAPI) UploadFile(files []*multipart.FileHeader) ([]string, err
 	return filePaths, nil
 }
 
-func (f *FileUploadAPI) DeleteFile(files []entities.ReportFile) error {
+func (f *FileUploadAPI) DeleteFile(filePaths []string) error {
 	var credentials = os.Getenv("GCS_CREDENTIALS")
 
 	ctx := context.Background()
@@ -74,8 +73,8 @@ func (f *FileUploadAPI) DeleteFile(files []entities.ReportFile) error {
 	}
 	defer client.Close()
 
-	for _, file := range files {
-		obj := client.Bucket(bucketName).Object(file.Path)
+	for _, path := range filePaths {
+		obj := client.Bucket(bucketName).Object(path)
 		if err := obj.Delete(ctx); err != nil {
 			return err
 		}
