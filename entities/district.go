@@ -8,6 +8,8 @@ type District struct {
 
 type DistrictRepositoryInterface interface {
 	AddDistrictsFromAPI(districts []District) error
+	GetAll(regencyID string) ([]District, error)
+	GetByID(id string) (District, error)
 }
 
 type DistrictIndonesiaAreaAPIInterface interface {
@@ -16,4 +18,6 @@ type DistrictIndonesiaAreaAPIInterface interface {
 
 type DistrictUseCaseInterface interface {
 	SeedDistrictDBFromAPI([]string) ([]District, error)
+	GetAll(regencyID string) ([]District, error)
+	GetByID(id string) (District, error)
 }

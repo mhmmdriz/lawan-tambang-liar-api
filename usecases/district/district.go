@@ -26,3 +26,21 @@ func (u *DistrictUseCase) SeedDistrictDBFromAPI(regencyIDs []string) ([]entities
 
 	return districts, nil
 }
+
+func (u *DistrictUseCase) GetAll(regencyID string) ([]entities.District, error) {
+	districts, err := u.repository.GetAll(regencyID)
+	if err != nil {
+		return nil, err
+	}
+
+	return districts, nil
+}
+
+func (u *DistrictUseCase) GetByID(id string) (entities.District, error) {
+	district, err := u.repository.GetByID(id)
+	if err != nil {
+		return entities.District{}, err
+	}
+
+	return district, nil
+}

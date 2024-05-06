@@ -36,10 +36,18 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	admin.Use(echojwt.WithConfig(jwtConfig), middlewares.IsAdmin)
 	admin.POST("/seed-regency-db-from-api", r.RegencyController.SeedRegencyDBFromAPI)
 	admin.POST("/seed-district-db-from-api", r.DistrictController.SeedDistrictDBFromAPI)
+	admin.GET("/regencies", r.RegencyController.GetAll)
+	admin.GET("/regencies/:id", r.RegencyController.GetByID)
+	admin.GET("/districts", r.DistrictController.GetAll)
+	admin.GET("/districts/:id", r.DistrictController.GetByID)
 
 	user := e.Group("/api/v1/user")
 	user.POST("/register", r.UserController.Register)
 	user.POST("/login", r.UserController.Login)
 	user.Use(echojwt.WithConfig(jwtConfig), middlewares.IsUser)
+	user.GET("/regencies", r.RegencyController.GetAll)
+	user.GET("/regencies/:id", r.RegencyController.GetByID)
+	user.GET("/districts", r.DistrictController.GetAll)
+	user.GET("/districts/:id", r.DistrictController.GetByID)
 
 }

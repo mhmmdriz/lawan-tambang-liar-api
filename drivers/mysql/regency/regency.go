@@ -37,3 +37,21 @@ func (r *RegencyRepo) GetRegencyIDs() ([]string, error) {
 
 	return regencyIDs, nil
 }
+
+func (r *RegencyRepo) GetAll() ([]entities.Regency, error) {
+	var regencies []entities.Regency
+	if err := r.DB.Find(&regencies).Error; err != nil {
+		return nil, err
+	}
+
+	return regencies, nil
+}
+
+func (r *RegencyRepo) GetByID(id string) (entities.Regency, error) {
+	var regency entities.Regency
+	if err := r.DB.Where("id = ?", id).First(&regency).Error; err != nil {
+		return entities.Regency{}, err
+	}
+
+	return regency, nil
+}

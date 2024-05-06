@@ -35,3 +35,21 @@ func (u *RegencyUsecase) GetRegencyIDs() ([]string, error) {
 
 	return regencyIDs, nil
 }
+
+func (u *RegencyUsecase) GetAll() ([]entities.Regency, error) {
+	regencies, err := u.repository.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return regencies, nil
+}
+
+func (u *RegencyUsecase) GetByID(id string) (entities.Regency, error) {
+	regency, err := u.repository.GetByID(id)
+	if err != nil {
+		return entities.Regency{}, err
+	}
+
+	return regency, nil
+}

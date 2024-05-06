@@ -28,3 +28,27 @@ func (r *DistrictRepo) AddDistrictsFromAPI(districts []entities.District) error 
 
 	return nil
 }
+
+func (r *DistrictRepo) GetAll(regencyID string) ([]entities.District, error) {
+	var districts []entities.District
+	if regencyID != "" {
+		if err := r.DB.Where("regency_id = ?", regencyID).Find(&districts).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := r.DB.Find(&districts).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	return districts, nil
+}
+
+func (r *DistrictRepo) GetByID(id string) (entities.District, error) {
+	var district entities.District
+	if err := r.DB.Where("id = ?", id).First(&district).Error; err != nil {
+		return entities.District{}, err
+	}
+
+	return district, nil
+}
