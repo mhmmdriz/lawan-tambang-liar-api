@@ -48,7 +48,7 @@ func (rc *ReportSolutionProcessController) Create(c echo.Context) error {
 	} else if action == "progress" {
 		reportSolutionRequest.Status = "on progress"
 	} else if action == "finish" {
-		reportSolutionRequest.Status = "done"
+		reportSolutionRequest.Status = "finished"
 	} else {
 		return c.JSON(utils.ConvertResponseCode(constants.ErrActionNotFound), base.NewErrorResponse(constants.ErrActionNotFound.Error()))
 	}
@@ -121,32 +121,39 @@ func (rc *ReportSolutionProcessController) GetByReportID(c echo.Context) error {
 
 func (rc *ReportSolutionProcessController) Delete(c echo.Context) error {
 	report_id, _ := strconv.Atoi(c.Param("id"))
-	report_solution_id, _ := strconv.Atoi(c.Param("solution_id"))
+	action := c.Param("action")
 
-	reportSolutionProcess, err := rc.reportSolutionUseCase.Delete(report_solution_id)
+	var report_solution_status string
+	var updatedStatus string
+	if action == "verify" {
+		report_solution_status = "verified"
+		updatedStatus = "pending"
+	} else if action == "reject" {
+		report_solution_status = "rejected"
+		updatedStatus = "pending"
+	} else if action == "progress" {
+		report_solution_status = "on progress"
+		updatedStatus = "verified"
+	} else if action == "finish" {
+		report_solution_status = "finished"
+		updatedStatus = "on progress"
+	} else {
+		return c.JSON(utils.ConvertResponseCode(constants.ErrActionNotFound), base.NewErrorResponse(constants.ErrActionNotFound.Error()))
+	}
+
+	reportSolutionProcess, err := rc.reportSolutionUseCase.Delete(report_id, report_solution_status)
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
 	reportSolutionProcessResponse := response_report_solution.DeleteFromEntitiesToResponse(&reportSolutionProcess)
 
-	var updatedStatus string
-	if reportSolutionProcess.Status == "verified" {
-		updatedStatus = "pending"
-	} else if reportSolutionProcess.Status == "rejected" {
-		updatedStatus = "pending"
-	} else if reportSolutionProcess.Status == "on progress" {
-		updatedStatus = "verified"
-	} else if reportSolutionProcess.Status == "done" {
-		updatedStatus = "on progress"
-	}
-
 	err2 := rc.reportUseCase.UpdateStatus(report_id, updatedStatus)
 	if err2 != nil {
 		return c.JSON(utils.ConvertResponseCode(err2), base.NewErrorResponse(err2.Error()))
 	}
 
-	reportSolutionFile, err3 := rc.reportSolutionFileUseCase.Delete(report_solution_id)
+	reportSolutionFile, err3 := rc.reportSolutionFileUseCase.Delete(reportSolutionProcess.ID)
 	if err3 != nil {
 		return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err3.Error()))
 	}
@@ -172,8 +179,18 @@ func (rc *ReportSolutionProcessController) Update(c echo.Context) error {
 	reportSolutionRequest.AdminID = admin_id
 	report_id, _ := strconv.Atoi(c.Param("id"))
 	reportSolutionRequest.ReportID = report_id
-	report_solution_id, _ := strconv.Atoi(c.Param("solution_id"))
-	reportSolutionRequest.ID = report_solution_id
+	action := c.Param("action")
+	if action == "verify" {
+		reportSolutionRequest.Status = "verified"
+	} else if action == "reject" {
+		reportSolutionRequest.Status = "rejected"
+	} else if action == "progress" {
+		reportSolutionRequest.Status = "on progress"
+	} else if action == "finish" {
+		reportSolutionRequest.Status = "finished"
+	} else {
+		return c.JSON(utils.ConvertResponseCode(constants.ErrActionNotFound), base.NewErrorResponse(constants.ErrActionNotFound.Error()))
+	}
 
 	reportSolution, err2 := rc.reportSolutionUseCase.Update(*reportSolutionRequest.ToEntities())
 	if err2 != nil {
@@ -205,12 +222,12 @@ func (rc *ReportSolutionProcessController) Update(c echo.Context) error {
 			return c.JSON(http.StatusBadRequest, base.NewErrorResponse(constants.ErrMaxFileSize.Error()))
 		}
 
-		_, err3 := rc.reportSolutionFileUseCase.Delete(report_solution_id)
+		_, err3 := rc.reportSolutionFileUseCase.Delete(reportSolution.ID)
 		if err3 != nil {
 			return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err3.Error()))
 		}
 
-		reportSolutionFile, err4 := rc.reportSolutionFileUseCase.Create(files, report_solution_id)
+		reportSolutionFile, err4 := rc.reportSolutionFileUseCase.Create(files, reportSolution.ID)
 		if err4 != nil {
 			return c.JSON(http.StatusInternalServerError, base.NewErrorResponse(err4.Error()))
 		}

@@ -35,11 +35,11 @@ func (r *ReportSolutionProcessRepo) GetByReportID(reportID int) ([]entities.Repo
 	return reportSolutionProcesses, nil
 }
 
-func (r *ReportSolutionProcessRepo) Delete(reportSolutionProcessID int) (entities.ReportSolutionProcess, error) {
+func (r *ReportSolutionProcessRepo) Delete(reportID int, reportSolutionProcessStatus string) (entities.ReportSolutionProcess, error) {
 	var reportSolutionProcess entities.ReportSolutionProcess
 
 	// Soft delete
-	if err := r.DB.First(&reportSolutionProcess, reportSolutionProcessID).Error; err != nil {
+	if err := r.DB.Where("report_id = ? && status = ?", reportID, reportSolutionProcessStatus).First(&reportSolutionProcess).Error; err != nil {
 		return entities.ReportSolutionProcess{}, err
 	}
 
@@ -56,7 +56,7 @@ func (r *ReportSolutionProcessRepo) Update(reportSolutionProcess entities.Report
 	// Check if the report solution process exists
 	var reportSolutionDB entities.ReportSolutionProcess
 
-	if err := r.DB.First(&reportSolutionDB, reportSolutionProcess.ID).Error; err != nil {
+	if err := r.DB.Where("report_id = ? && status = ?", reportSolutionProcess.ReportID, reportSolutionProcess.Status).First(&reportSolutionDB).Error; err != nil {
 		return entities.ReportSolutionProcess{}, constants.ErrReportSolutionProcessNotFound
 	}
 
@@ -67,6 +67,7 @@ func (r *ReportSolutionProcessRepo) Update(reportSolutionProcess entities.Report
 		return entities.ReportSolutionProcess{}, constants.ErrInternalServerError
 	}
 
+	reportSolutionProcess.ID = reportSolutionDB.ID
 	reportSolutionProcess.Status = reportSolutionDB.Status
 
 	return reportSolutionProcess, nil
