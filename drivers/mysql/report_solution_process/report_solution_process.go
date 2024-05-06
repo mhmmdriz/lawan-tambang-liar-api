@@ -1,6 +1,7 @@
 package report_solution_process
 
 import (
+	"lawan-tambang-liar/constants"
 	"lawan-tambang-liar/entities"
 	"time"
 
@@ -47,6 +48,26 @@ func (r *ReportSolutionProcessRepo) Delete(reportSolutionProcessID int) (entitie
 	if err := r.DB.Save(&reportSolutionProcess).Error; err != nil {
 		return entities.ReportSolutionProcess{}, err
 	}
+
+	return reportSolutionProcess, nil
+}
+
+func (r *ReportSolutionProcessRepo) Update(reportSolutionProcess entities.ReportSolutionProcess) (entities.ReportSolutionProcess, error) {
+	// Check if the report solution process exists
+	var reportSolutionDB entities.ReportSolutionProcess
+
+	if err := r.DB.First(&reportSolutionDB, reportSolutionProcess.ID).Error; err != nil {
+		return entities.ReportSolutionProcess{}, constants.ErrReportSolutionProcessNotFound
+	}
+
+	reportSolutionDB.Message = reportSolutionProcess.Message
+	reportSolutionDB.AdminID = reportSolutionProcess.AdminID
+
+	if err := r.DB.Save(&reportSolutionDB).Error; err != nil {
+		return entities.ReportSolutionProcess{}, constants.ErrInternalServerError
+	}
+
+	reportSolutionProcess.Status = reportSolutionDB.Status
 
 	return reportSolutionProcess, nil
 }

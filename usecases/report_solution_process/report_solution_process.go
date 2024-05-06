@@ -48,3 +48,17 @@ func (u *ReportSolutionProcessUseCase) Delete(reportSolutionProcessID int) (enti
 
 	return reportSolutionProcess, nil
 }
+
+func (u *ReportSolutionProcessUseCase) Update(reportSolutionProcess entities.ReportSolutionProcess) (entities.ReportSolutionProcess, error) {
+	if reportSolutionProcess.Message == "" {
+		return entities.ReportSolutionProcess{}, constants.ErrAllFieldsMustBeFilled
+	}
+
+	reportSolution, err := u.repository.Update(reportSolutionProcess)
+
+	if err != nil {
+		return entities.ReportSolutionProcess{}, err
+	}
+
+	return reportSolution, nil
+}
