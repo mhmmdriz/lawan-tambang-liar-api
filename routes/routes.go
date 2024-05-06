@@ -4,6 +4,8 @@ import (
 	"lawan-tambang-liar/controllers/admin"
 	"lawan-tambang-liar/controllers/district"
 	"lawan-tambang-liar/controllers/regency"
+	"lawan-tambang-liar/controllers/report"
+	"lawan-tambang-liar/controllers/report_solution_process"
 	"lawan-tambang-liar/controllers/user"
 	"lawan-tambang-liar/middlewares"
 	"os"
@@ -14,10 +16,12 @@ import (
 )
 
 type RouteController struct {
-	RegencyController  *regency.RegencyController
-	DistrictController *district.DistrictController
-	UserController     *user.UserController
-	AdminController    *admin.AdminController
+	RegencyController               *regency.RegencyController
+	DistrictController              *district.DistrictController
+	UserController                  *user.UserController
+	AdminController                 *admin.AdminController
+	ReportController                *report.ReportController
+	ReportSolutionProcessController *report_solution_process.ReportSolutionProcessController
 }
 
 func (r *RouteController) InitRoute(e *echo.Echo) {
@@ -40,6 +44,13 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	admin.GET("/regencies/:id", r.RegencyController.GetByID)
 	admin.GET("/districts", r.DistrictController.GetAll)
 	admin.GET("/districts/:id", r.DistrictController.GetByID)
+	admin.GET("/report", r.ReportController.GetPaginated)
+	admin.GET("/report/:id", r.ReportController.GetByID)
+	admin.DELETE("/report/:id", r.ReportController.AdminDelete)
+	admin.GET("/report/:id/solution", r.ReportSolutionProcessController.GetByReportID)
+	admin.POST("/report/:id/solution/:action", r.ReportSolutionProcessController.Create)
+	admin.DELETE("/report/:id/solution/:action/delete", r.ReportSolutionProcessController.Delete)
+	admin.PUT("/report/:id/solution/:action/update", r.ReportSolutionProcessController.Update)
 
 	user := e.Group("/api/v1/user")
 	user.POST("/register", r.UserController.Register)
@@ -49,5 +60,10 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	user.GET("/regencies/:id", r.RegencyController.GetByID)
 	user.GET("/districts", r.DistrictController.GetAll)
 	user.GET("/districts/:id", r.DistrictController.GetByID)
+	user.POST("/report", r.ReportController.Create)
+	user.GET("/report", r.ReportController.GetPaginated)
+	user.GET("/report/:id", r.ReportController.GetByID)
+	user.DELETE("/report/:id", r.ReportController.Delete)
+	user.PUT("/report/:id/update", r.ReportController.Update)
 
 }
