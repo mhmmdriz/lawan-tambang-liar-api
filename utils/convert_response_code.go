@@ -6,16 +6,32 @@ import (
 )
 
 func ConvertResponseCode(err error) int {
-	switch err {
-	case constants.ErrInvalidUsernameOrPassword:
+	var badRequestErrors = []error{
+		constants.ErrInvalidUsernameOrPassword,
+		constants.ErrAllFieldsMustBeFilled,
+		constants.ErrEmailAlreadyExist,
+		constants.ErrUsernameAlreadyExist,
+		constants.ErrMaxFileSize,
+		constants.ErrMaxFileUpload,
+		constants.ErrLimitAndPageMustBeFilled,
+		constants.ErrIDMustBeFilled,
+		constants.ErrReportNotFound,
+	}
+
+	if contains(badRequestErrors, err) {
 		return http.StatusBadRequest
-	case constants.ErrAllFieldsMustBeFilled:
-		return http.StatusBadRequest
-	case constants.ErrEmailAlreadyExist:
-		return http.StatusBadRequest
-	case constants.ErrUsernameAlreadyExist:
-		return http.StatusBadRequest
-	default:
+	} else if err == constants.ErrUnauthorized {
+		return http.StatusUnauthorized
+	} else {
 		return http.StatusInternalServerError
 	}
+}
+
+func contains(slice []error, item error) bool {
+	for _, element := range slice {
+		if element == item {
+			return true
+		}
+	}
+	return false
 }
