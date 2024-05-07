@@ -95,3 +95,30 @@ func (uc *UserController) Delete(c echo.Context) error {
 	userResponse := response.DeleteFromEntitiesToResponse(&user)
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Delete User", userResponse))
 }
+
+func (uc *UserController) ChangePassword(c echo.Context) error {
+	user_id, err := utils.GetUserIDFromJWT(c)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	user, err := uc.userUseCase.ChangePassword(user_id, c.FormValue("new_password"))
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	userResponse := response.PasswordFromEntitiesToResponse(&user)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Change Password", userResponse))
+}
+
+func (uc *UserController) ResetPassword(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	user, err := uc.userUseCase.ResetPassword(id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	userResponse := response.PasswordFromEntitiesToResponse(&user)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Reset Password", userResponse))
+}

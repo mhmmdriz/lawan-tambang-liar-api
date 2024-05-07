@@ -54,11 +54,13 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	admin.GET("/users", r.UserController.GetAll)
 	admin.GET("/users/:id", r.UserController.GetByID)
 	admin.DELETE("/users/:id/delete", r.UserController.Delete)
+	admin.PUT("/users/:id/reset-password", r.UserController.ResetPassword)
 
 	user := e.Group("/api/v1/user")
 	user.POST("/register", r.UserController.Register)
 	user.POST("/login", r.UserController.Login)
 	user.Use(echojwt.WithConfig(jwtConfig), middlewares.IsUser)
+	user.PUT("/change-password", r.UserController.ChangePassword)
 	user.GET("/regencies", r.RegencyController.GetAll)
 	user.GET("/regencies/:id", r.RegencyController.GetByID)
 	user.GET("/districts", r.DistrictController.GetAll)

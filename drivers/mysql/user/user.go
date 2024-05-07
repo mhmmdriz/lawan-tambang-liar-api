@@ -81,3 +81,37 @@ func (r *UserRepo) Delete(id int) (entities.User, error) {
 
 	return user, nil
 }
+
+func (r *UserRepo) ResetPassword(id int) (entities.User, error) {
+	var user entities.User
+
+	if err := r.DB.Where("id = ?", id).First(&user).Error; err != nil {
+		return entities.User{}, constants.ErrUserNotFound
+	}
+
+	hash, _ := utils.HashPassword("user")
+	user.Password = hash
+
+	if err := r.DB.Save(&user).Error; err != nil {
+		return entities.User{}, constants.ErrInternalServerError
+	}
+
+	return user, nil
+}
+
+func (r *UserRepo) ChangePassword(id int, newPassword string) (entities.User, error) {
+	var user entities.User
+
+	if err := r.DB.Where("id = ?", id).First(&user).Error; err != nil {
+		return entities.User{}, constants.ErrUserNotFound
+	}
+
+	hash, _ := utils.HashPassword(newPassword)
+	user.Password = hash
+
+	if err := r.DB.Save(&user).Error; err != nil {
+		return entities.User{}, constants.ErrInternalServerError
+	}
+
+	return user, nil
+}

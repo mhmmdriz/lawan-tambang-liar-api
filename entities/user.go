@@ -24,8 +24,8 @@ type UserRepositoryInterface interface {
 	GetAll() ([]User, error)
 	GetByID(id int) (User, error)
 	Delete(id int) (User, error)
-	// ChangePassword(id int, newPassword string) (User, error)
-	// ResetPassword(id int) (User, error)
+	ChangePassword(id int, newPassword string) (User, error)
+	ResetPassword(id int) (User, error)
 }
 
 type UserUseCaseInterface interface {
@@ -34,6 +34,6 @@ type UserUseCaseInterface interface {
 	GetAll() ([]User, error)
 	GetByID(id int) (User, error)
 	Delete(id int) (User, error)
-	// ChangePassword(id int, newPassword string) (User, error)
-	// ResetPassword(id int) (User, error)
+	ChangePassword(id int, newPassword string) (User, error)
+	ResetPassword(id int) (User, error)
 }

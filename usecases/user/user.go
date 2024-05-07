@@ -84,3 +84,27 @@ func (u *UserUseCase) Delete(id int) (entities.User, error) {
 
 	return user, nil
 }
+
+func (u *UserUseCase) ChangePassword(id int, newPassword string) (entities.User, error) {
+	if newPassword == "" {
+		return entities.User{}, constants.ErrAllFieldsMustBeFilled
+	}
+
+	user, err := u.repository.ChangePassword(id, newPassword)
+
+	if err != nil {
+		return entities.User{}, err
+	}
+
+	return user, nil
+}
+
+func (u *UserUseCase) ResetPassword(id int) (entities.User, error) {
+	user, err := u.repository.ResetPassword(id)
+
+	if err != nil {
+		return entities.User{}, err
+	}
+
+	return user, nil
+}
