@@ -32,12 +32,22 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	}
 
 	superAdmin := e.Group("/api/v1/super-admin")
+	superAdmin.POST("/login", r.AdminController.Login)
 	superAdmin.Use(echojwt.WithConfig(jwtConfig), middlewares.IsSuperAdmin)
-	superAdmin.POST("/create-account", r.AdminController.CreateAccount)
+	superAdmin.GET("/admin-accounts", r.AdminController.GetAll)
+	superAdmin.GET("/admin-accounts/:id", r.AdminController.GetByID)
+	superAdmin.POST("/admin-accounts", r.AdminController.CreateAccount)
+	superAdmin.DELETE("/admin-accounts/:id/delete", r.AdminController.DeleteAccount)
+	superAdmin.PUT("/admin-accounts/:id/reset-password", r.AdminController.ResetPassword)
+	superAdmin.PUT("/change-password", r.AdminController.ChangePassword)
 
 	admin := e.Group("/api/v1/admin")
 	admin.POST("/login", r.AdminController.Login)
 	admin.Use(echojwt.WithConfig(jwtConfig), middlewares.IsAdmin)
+	admin.GET("", r.AdminController.GetAll)
+	admin.GET("/:id", r.AdminController.GetByID)
+	admin.PUT("/reset-password", r.AdminController.ResetPassword)
+	admin.PUT("/change-password", r.AdminController.ChangePassword)
 	admin.POST("/seed-regency-db-from-api", r.RegencyController.SeedRegencyDBFromAPI)
 	admin.POST("/seed-district-db-from-api", r.DistrictController.SeedDistrictDBFromAPI)
 	admin.GET("/regencies", r.RegencyController.GetAll)
