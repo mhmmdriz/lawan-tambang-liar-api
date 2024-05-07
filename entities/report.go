@@ -41,22 +41,22 @@ type Report struct {
 
 type ReportRepositoryInterface interface {
 	Create(report *Report) error
-	GetPaginated(limit int, page int, search string, filter map[string]interface{}, sort_by string, sort_type string) ([]Report, error)
+	GetPaginated(limit int, page int, search string, filter map[string]interface{}, sortBy string, sortType string) ([]Report, error)
 	GetByID(id int) (Report, error)
 	Update(report Report) (Report, error)
-	Delete(report_id int, user_id int) (Report, error)
-	AdminDelete(report_id int) (Report, error)
-	UpdateStatus(report_id int, status string) error
+	Delete(reportID int, userID int) (Report, error)
+	AdminDelete(reportID int) (Report, error)
+	UpdateStatus(reportID int, status string) error
 	GetMetaData(limit int, page int, search string, filter map[string]interface{}) (Metadata, error)
 }
 
 type ReportUseCaseInterface interface {
 	Create(report *Report) (Report, error)
-	GetPaginated(limit int, page int, search string, filter map[string]interface{}, sort_by string, sort_type string) ([]Report, error)
+	GetPaginated(limit int, page int, search string, filter map[string]interface{}, sortBy string, sortType string) ([]Report, error)
 	GetByID(id int) (Report, error)
 	Update(report Report) (Report, error)
-	Delete(report_id int, user_id int) (Report, error)
-	AdminDelete(report_id int) (Report, error)
-	UpdateStatus(report_id int, status string) error
+	Delete(reportID int, userID int) (Report, error)
+	AdminDelete(reportID int) (Report, error)
+	UpdateStatus(reportID int, status string) error
 	GetMetaData(limit int, page int, search string, filter map[string]interface{}) (Metadata, error)
 }
