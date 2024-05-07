@@ -17,17 +17,19 @@ const (
 )
 
 type FileUploadAPI struct {
+	APIKey     string
 	FolderPath string
 }
 
-func NewFileUploadAPI(folderPath string) *FileUploadAPI {
+func NewFileUploadAPI(APIKey string, folderPath string) *FileUploadAPI {
 	return &FileUploadAPI{
+		APIKey:     APIKey,
 		FolderPath: folderPath,
 	}
 }
 
 func (f *FileUploadAPI) UploadFile(files []*multipart.FileHeader) ([]string, error) {
-	var credentials = os.Getenv("GCS_CREDENTIALS")
+	var credentials = f.APIKey
 
 	var filePaths []string
 	for _, fileHeader := range files {
