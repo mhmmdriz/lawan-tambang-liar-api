@@ -34,10 +34,12 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	superAdmin := e.Group("/api/v1/super-admin")
 	superAdmin.Use(echojwt.WithConfig(jwtConfig), middlewares.IsSuperAdmin)
 	superAdmin.POST("/create-account", r.AdminController.CreateAccount)
+	superAdmin.DELETE("/delete-account/:id", r.AdminController.DeleteAccount)
 
 	admin := e.Group("/api/v1/admin")
 	admin.POST("/login", r.AdminController.Login)
 	admin.Use(echojwt.WithConfig(jwtConfig), middlewares.IsAdmin)
+	admin.GET("/:id", r.AdminController.GetByID)
 	admin.POST("/seed-regency-db-from-api", r.RegencyController.SeedRegencyDBFromAPI)
 	admin.POST("/seed-district-db-from-api", r.DistrictController.SeedDistrictDBFromAPI)
 	admin.GET("/regencies", r.RegencyController.GetAll)

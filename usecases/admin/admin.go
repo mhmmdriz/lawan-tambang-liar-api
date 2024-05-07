@@ -59,3 +59,27 @@ func (u *AdminUseCase) Login(admin *entities.Admin) (entities.Admin, error) {
 
 	return *admin, nil
 }
+
+func (u *AdminUseCase) GetByID(id int) (entities.Admin, error) {
+	admin, err := u.repository.GetByID(id)
+
+	if err != nil {
+		return entities.Admin{}, err
+	}
+
+	return admin, nil
+}
+
+func (u *AdminUseCase) DeleteAccount(id int) (entities.Admin, error) {
+	if id == 1 {
+		return entities.Admin{}, constants.ErrSuperAdminCannotBeDeleted
+	}
+
+	admin, err := u.repository.DeleteAccount(id)
+
+	if err != nil {
+		return entities.Admin{}, err
+	}
+
+	return admin, nil
+}

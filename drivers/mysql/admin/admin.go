@@ -2,8 +2,10 @@ package admin
 
 import (
 	"errors"
+	"lawan-tambang-liar/constants"
 	"lawan-tambang-liar/entities"
 	"lawan-tambang-liar/utils"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -43,4 +45,29 @@ func (r *AdminRepo) Login(admin *entities.Admin) error {
 	(*admin).IsSuperAdmin = adminDB.IsSuperAdmin
 
 	return nil
+}
+
+func (r *AdminRepo) GetByID(id int) (entities.Admin, error) {
+	var admin entities.Admin
+
+	if err := r.DB.Preload("Regency").Preload("District").Where("id = ?", id).First(&admin).Error; err != nil {
+		return admin, constants.ErrAdminNotFound
+	}
+
+	return admin, nil
+}
+
+func (r *AdminRepo) DeleteAccount(id int) (entities.Admin, error) {
+	var admin entities.Admin
+	if err := r.DB.First(&admin, id).Error; err != nil {
+		return admin, constants.ErrAdminNotFound
+	}
+
+	admin.DeletedAt = gorm.DeletedAt{Time: time.Now(), Valid: true}
+
+	if err := r.DB.Save(&admin).Error; err != nil {
+		return admin, constants.ErrInternalServerError
+	}
+
+	return admin, nil
 }

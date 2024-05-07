@@ -7,6 +7,7 @@ import (
 	"lawan-tambang-liar/entities"
 	"lawan-tambang-liar/utils"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -55,4 +56,28 @@ func (ac *AdminController) Login(c echo.Context) error {
 
 	adminResponse := response.LoginFromEntitiesToResponse(&admin)
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Login", adminResponse))
+}
+
+func (ac *AdminController) GetByID(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	admin, err := ac.adminUseCase.GetByID(id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+	adminResponse := response.GetFromEntitiesToResponse(&admin)
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Admin", adminResponse))
+}
+
+func (ac *AdminController) DeleteAccount(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	admin, err := ac.adminUseCase.DeleteAccount(id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+	adminResponse := response.DeleteFromEntitiesToResponse(&admin)
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Delete Admin", adminResponse))
 }
