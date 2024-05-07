@@ -107,29 +107,15 @@ func (rc *ReportController) GetPaginated(c echo.Context) error {
 	sort_by := c.QueryParam("sort_by")
 	sort_type := c.QueryParam("sort_type")
 
-	report, err := rc.reportUseCase.GetPaginated(limit, page, search, filter, sort_by, sort_type)
+	reports, err := rc.reportUseCase.GetPaginated(limit, page, search, filter, sort_by, sort_type)
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
 	reportResponses := []*response_report.GetPaginate{}
 	var reportResponse *response_report.GetPaginate
-	var user, district, regency string
-	var reportFileResponse *response_report_file.ReportFile
-	for _, r := range report {
-		user = r.User.Username
-		district = r.District.Name
-		regency = r.Regency.Name
-		reportFileResponses := []string{}
-		for _, rf := range r.Files {
-			reportFileResponse = response_report_file.FromEntitiesToResponse(&rf)
-			reportFileResponses = append(reportFileResponses, reportFileResponse.Path)
-		}
-		reportResponse = response_report.GetPaginateFromEntitiesToResponse(&r)
-		reportResponse.User = user
-		reportResponse.District = district
-		reportResponse.Regency = regency
-		reportResponse.Files = reportFileResponses
+	for _, report := range reports {
+		reportResponse = response_report.GetPaginateFromEntitiesToResponse(&report)
 		reportResponses = append(reportResponses, reportResponse)
 	}
 
@@ -144,20 +130,7 @@ func (rc *ReportController) GetByID(c echo.Context) error {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
-	user := report.User.Username
-	district := report.District.Name
-	regency := report.Regency.Name
-	reportFileResponses := []string{}
-	for _, rf := range report.Files {
-		reportFileResponse := response_report_file.FromEntitiesToResponse(&rf)
-		reportFileResponses = append(reportFileResponses, reportFileResponse.Path)
-	}
-
 	reportResponse := response_report.GetPaginateFromEntitiesToResponse(&report)
-	reportResponse.User = user
-	reportResponse.District = district
-	reportResponse.Regency = regency
-	reportResponse.Files = reportFileResponses
 
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Report By ID", reportResponse))
 }
