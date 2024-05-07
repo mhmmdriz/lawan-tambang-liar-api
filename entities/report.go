@@ -6,6 +6,20 @@ import (
 	"gorm.io/gorm"
 )
 
+type Pagination struct {
+	TotalDataPerPage int
+	FirstPage        int
+	LastPage         int
+	CurrentPage      int
+	NextPage         int
+	PrevPage         int
+}
+
+type Metadata struct {
+	TotalData  int
+	Pagination Pagination
+}
+
 type Report struct {
 	ID          int
 	UserID      int
@@ -33,6 +47,7 @@ type ReportRepositoryInterface interface {
 	Delete(report_id int, user_id int) (Report, error)
 	AdminDelete(report_id int) (Report, error)
 	UpdateStatus(report_id int, status string) error
+	GetMetaData(limit int, page int, search string, filter map[string]interface{}) (Metadata, error)
 }
 
 type ReportUseCaseInterface interface {
@@ -43,4 +58,5 @@ type ReportUseCaseInterface interface {
 	Delete(report_id int, user_id int) (Report, error)
 	AdminDelete(report_id int) (Report, error)
 	UpdateStatus(report_id int, status string) error
+	GetMetaData(limit int, page int, search string, filter map[string]interface{}) (Metadata, error)
 }

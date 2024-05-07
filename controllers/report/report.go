@@ -119,7 +119,14 @@ func (rc *ReportController) GetPaginated(c echo.Context) error {
 		reportResponses = append(reportResponses, reportResponse)
 	}
 
-	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Paginate Report", reportResponses))
+	metaData, err := rc.reportUseCase.GetMetaData(limit, page, search, filter)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	metaDataResponse := base.NewMetadata(metaData.TotalData, metaData.Pagination.TotalDataPerPage, metaData.Pagination.FirstPage, metaData.Pagination.LastPage, metaData.Pagination.CurrentPage, metaData.Pagination.NextPage, metaData.Pagination.PrevPage)
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponseWithMetadata("Success Get Reports", reportResponses, *metaDataResponse))
 }
 
 func (rc *ReportController) GetByID(c echo.Context) error {

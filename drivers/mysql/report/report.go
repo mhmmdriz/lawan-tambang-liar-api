@@ -152,3 +152,50 @@ func (r *ReportRepo) UpdateStatus(report_id int, status string) error {
 
 	return nil
 }
+
+func (r *ReportRepo) GetMetaData(limit int, page int, search string, filter map[string]interface{}) (entities.Metadata, error) {
+	var totalData int64
+	var pagination entities.Pagination
+
+	query := r.DB.Model(&entities.Report{})
+
+	if filter != nil {
+		query = query.Where(filter)
+	}
+
+	if search != "" {
+		query = query.Where("title LIKE ?", "%"+search+"%")
+	}
+
+	if err := query.Count(&totalData).Error; err != nil {
+		return entities.Metadata{}, err
+	}
+
+	pagination.FirstPage = 1
+	pagination.LastPage = (int(totalData) + limit - 1) / limit
+	pagination.CurrentPage = page
+	if pagination.CurrentPage == pagination.LastPage {
+		pagination.TotalDataPerPage = int(totalData) - (pagination.LastPage-1)*limit
+	} else {
+		pagination.TotalDataPerPage = limit
+	}
+
+	if page > 1 {
+		pagination.PrevPage = page - 1
+	} else {
+		pagination.PrevPage = 0
+	}
+
+	if page < pagination.LastPage {
+		pagination.NextPage = page + 1
+	} else {
+		pagination.NextPage = 0
+	}
+
+	metadata := entities.Metadata{
+		TotalData:  int(totalData),
+		Pagination: pagination,
+	}
+
+	return metadata, nil
+}

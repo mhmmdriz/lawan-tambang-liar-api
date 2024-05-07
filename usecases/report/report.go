@@ -108,3 +108,13 @@ func (u *ReportUseCase) UpdateStatus(report_id int, status string) error {
 
 	return nil
 }
+
+func (u *ReportUseCase) GetMetaData(limit int, page int, search string, filter map[string]interface{}) (entities.Metadata, error) {
+	meta, err := u.repository.GetMetaData(limit, page, search, filter)
+
+	if err != nil {
+		return entities.Metadata{}, constants.ErrInternalServerError
+	}
+
+	return meta, nil
+}
