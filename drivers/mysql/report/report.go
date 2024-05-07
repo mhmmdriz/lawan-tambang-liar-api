@@ -25,7 +25,7 @@ func (r *ReportRepo) Create(report *entities.Report) error {
 	return nil
 }
 
-func (r *ReportRepo) GetPaginated(limit int, page int, search string, filter map[string]interface{}, sort_by string, sort_type string) ([]entities.Report, error) {
+func (r *ReportRepo) GetPaginated(limit int, page int, search string, filter map[string]interface{}, sortBy string, sortType string) ([]entities.Report, error) {
 	var reports []entities.Report
 	query := r.DB
 
@@ -37,12 +37,12 @@ func (r *ReportRepo) GetPaginated(limit int, page int, search string, filter map
 		query = query.Where("title LIKE ?", "%"+search+"%")
 	}
 
-	if sort_by != "" && sort_type != "" {
-		query = query.Order(sort_by + " " + sort_type)
-	} else if sort_by != "" && sort_type == "" {
-		query = query.Order(sort_by + " DESC")
-	} else if sort_by == "" && sort_type != "" {
-		query = query.Order("created_at " + sort_type)
+	if sortBy != "" && sortType != "" {
+		query = query.Order(sortBy + " " + sortType)
+	} else if sortBy != "" && sortType == "" {
+		query = query.Order(sortBy + " DESC")
+	} else if sortBy == "" && sortType != "" {
+		query = query.Order("created_at " + sortType)
 	} else {
 		query = query.Order("created_at DESC")
 	}
@@ -93,16 +93,16 @@ func (r *ReportRepo) Update(report entities.Report) (entities.Report, error) {
 	return report, nil
 }
 
-func (r *ReportRepo) Delete(report_id int, user_id int) (entities.Report, error) {
+func (r *ReportRepo) Delete(reportID int, userID int) (entities.Report, error) {
 	var report entities.Report
 
 	// Soft delete report by marking it as inactive
-	if err := r.DB.First(&report, report_id).Error; err != nil {
+	if err := r.DB.First(&report, reportID).Error; err != nil {
 		return entities.Report{}, constants.ErrReportNotFound
 	}
 
 	// Check if the user is the owner of the report
-	if report.UserID != user_id {
+	if report.UserID != userID {
 		return entities.Report{}, constants.ErrUnauthorized
 	}
 
@@ -117,11 +117,11 @@ func (r *ReportRepo) Delete(report_id int, user_id int) (entities.Report, error)
 	return report, nil
 }
 
-func (r *ReportRepo) AdminDelete(report_id int) (entities.Report, error) {
+func (r *ReportRepo) AdminDelete(reportID int) (entities.Report, error) {
 	var report entities.Report
 
 	// Soft delete report by marking it as inactive
-	if err := r.DB.First(&report, report_id).Error; err != nil {
+	if err := r.DB.First(&report, reportID).Error; err != nil {
 		return entities.Report{}, constants.ErrReportNotFound
 	}
 
@@ -136,11 +136,11 @@ func (r *ReportRepo) AdminDelete(report_id int) (entities.Report, error) {
 	return report, nil
 }
 
-func (r *ReportRepo) UpdateStatus(report_id int, status string) error {
+func (r *ReportRepo) UpdateStatus(reportID int, status string) error {
 	var report entities.Report
 
 	// Update the status of the report
-	if err := r.DB.First(&report, report_id).Error; err != nil {
+	if err := r.DB.First(&report, reportID).Error; err != nil {
 		return constants.ErrReportNotFound
 	}
 
@@ -151,4 +151,51 @@ func (r *ReportRepo) UpdateStatus(report_id int, status string) error {
 	}
 
 	return nil
+}
+
+func (r *ReportRepo) GetMetaData(limit int, page int, search string, filter map[string]interface{}) (entities.Metadata, error) {
+	var totalData int64
+	var pagination entities.Pagination
+
+	query := r.DB.Model(&entities.Report{})
+
+	if filter != nil {
+		query = query.Where(filter)
+	}
+
+	if search != "" {
+		query = query.Where("title LIKE ?", "%"+search+"%")
+	}
+
+	if err := query.Count(&totalData).Error; err != nil {
+		return entities.Metadata{}, err
+	}
+
+	pagination.FirstPage = 1
+	pagination.LastPage = (int(totalData) + limit - 1) / limit
+	pagination.CurrentPage = page
+	if pagination.CurrentPage == pagination.LastPage {
+		pagination.TotalDataPerPage = int(totalData) - (pagination.LastPage-1)*limit
+	} else {
+		pagination.TotalDataPerPage = limit
+	}
+
+	if page > 1 {
+		pagination.PrevPage = page - 1
+	} else {
+		pagination.PrevPage = 0
+	}
+
+	if page < pagination.LastPage {
+		pagination.NextPage = page + 1
+	} else {
+		pagination.NextPage = 0
+	}
+
+	metadata := entities.Metadata{
+		TotalData:  int(totalData),
+		Pagination: pagination,
+	}
+
+	return metadata, nil
 }

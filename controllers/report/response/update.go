@@ -8,13 +8,13 @@ import (
 type Update struct {
 	ID          int                    `json:"id"`
 	UserID      int                    `json:"user_id"`
-	Title       string                 `form:"title"`
-	Description string                 `form:"description"`
-	RegencyID   string                 `form:"regency_id"`
-	DistrictID  string                 `form:"district_id"`
-	Address     string                 `form:"address"`
-	Upvotes     int                    `form:"upvotes"`
-	Status      string                 `form:"status"`
+	Title       string                 `json:"title"`
+	Description string                 `json:"description"`
+	RegencyID   string                 `json:"regency_id"`
+	DistrictID  string                 `json:"district_id"`
+	Address     string                 `json:"address"`
+	Upvotes     int                    `json:"upvotes"`
+	Status      string                 `json:"status"`
 	Files       []*response.ReportFile `json:"files"`
 }
 
