@@ -54,3 +54,33 @@ func (u *UserUseCase) Login(user *entities.User) (entities.User, error) {
 
 	return *user, nil
 }
+
+func (u *UserUseCase) GetAll() ([]entities.User, error) {
+	users, err := u.repository.GetAll()
+
+	if err != nil {
+		return []entities.User{}, err
+	}
+
+	return users, nil
+}
+
+func (u *UserUseCase) GetByID(id int) (entities.User, error) {
+	user, err := u.repository.GetByID(id)
+
+	if err != nil {
+		return entities.User{}, err
+	}
+
+	return user, nil
+}
+
+func (u *UserUseCase) Delete(id int) (entities.User, error) {
+	user, err := u.repository.Delete(id)
+
+	if err != nil {
+		return entities.User{}, err
+	}
+
+	return user, nil
+}

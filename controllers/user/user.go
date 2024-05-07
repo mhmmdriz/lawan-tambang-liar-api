@@ -7,6 +7,7 @@ import (
 	"lawan-tambang-liar/entities"
 	"lawan-tambang-liar/utils"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -55,4 +56,42 @@ func (uc *UserController) Login(c echo.Context) error {
 
 	userResponse := response.LoginFromEntitiesToResponse(&user)
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Login", userResponse))
+}
+
+func (uc *UserController) GetAll(c echo.Context) error {
+	users, err := uc.userUseCase.GetAll()
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	var usersResponse []response.Get
+	for _, user := range users {
+		usersResponse = append(usersResponse, *response.GetFromEntitiesToResponse(&user))
+	}
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get All Users", usersResponse))
+}
+
+func (uc *UserController) GetByID(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	user, err := uc.userUseCase.GetByID(id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	userResponse := response.GetFromEntitiesToResponse(&user)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get User By ID", userResponse))
+}
+
+func (uc *UserController) Delete(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	user, err := uc.userUseCase.Delete(id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	userResponse := response.DeleteFromEntitiesToResponse(&user)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Delete User", userResponse))
 }

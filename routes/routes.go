@@ -51,6 +51,9 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	admin.POST("/reports/:id/solutions/:action", r.ReportSolutionProcessController.Create)
 	admin.DELETE("/reports/:id/solutions/:action/delete", r.ReportSolutionProcessController.Delete)
 	admin.PUT("/reports/:id/solutions/:action/update", r.ReportSolutionProcessController.Update)
+	admin.GET("/users", r.UserController.GetAll)
+	admin.GET("/users/:id", r.UserController.GetByID)
+	admin.DELETE("/users/:id/delete", r.UserController.Delete)
 
 	user := e.Group("/api/v1/user")
 	user.POST("/register", r.UserController.Register)

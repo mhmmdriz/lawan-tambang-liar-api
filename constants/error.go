@@ -16,4 +16,5 @@ var (
 	ErrReportNotFound                = errors.New("report not found")
 	ErrActionNotFound                = errors.New("action not found")
 	ErrReportSolutionProcessNotFound = errors.New("report solution process not found")
+	ErrUserNotFound                  = errors.New("user not found")
 )
