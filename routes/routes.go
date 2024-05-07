@@ -56,6 +56,7 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	admin.GET("/districts/:id", r.DistrictController.GetByID)
 	admin.GET("/reports", r.ReportController.GetPaginated)
 	admin.GET("/reports/:id", r.ReportController.GetByID)
+	admin.GET("/reports/:id/distance-duration", r.ReportController.GetDistanceDuration)
 	admin.DELETE("/reports/:id", r.ReportController.AdminDelete)
 	admin.GET("/reports/:id/solutions", r.ReportSolutionProcessController.GetByReportID)
 	admin.POST("/reports/:id/solutions/:action", r.ReportSolutionProcessController.Create)

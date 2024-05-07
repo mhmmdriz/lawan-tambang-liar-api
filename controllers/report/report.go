@@ -261,3 +261,21 @@ func (rc *ReportController) AdminDelete(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Delete Report", reportResponse))
 }
+
+func (rc *ReportController) GetDistanceDuration(c echo.Context) error {
+	report_id, _ := strconv.Atoi(c.Param("id"))
+	admin_id, err := utils.GetUserIDFromJWT(c)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	distanceDuration, err := rc.reportUseCase.GetDistanceDuration(report_id, admin_id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	distanceDurationResponse := response_report.DistanceDurationFromEntitiesToResponse(distanceDuration)
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Distance & Duration", distanceDurationResponse))
+
+}
