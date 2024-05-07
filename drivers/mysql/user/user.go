@@ -2,8 +2,10 @@ package user
 
 import (
 	"errors"
+	"lawan-tambang-liar/constants"
 	"lawan-tambang-liar/entities"
 	"lawan-tambang-liar/utils"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -42,4 +44,74 @@ func (r *UserRepo) Login(user *entities.User) error {
 	(*user).Username = userDB.Username
 
 	return nil
+}
+
+func (r *UserRepo) GetAll() ([]entities.User, error) {
+	var users []entities.User
+
+	if err := r.DB.Find(&users).Error; err != nil {
+		return []entities.User{}, constants.ErrInternalServerError
+	}
+
+	return users, nil
+}
+
+func (r *UserRepo) GetByID(id int) (entities.User, error) {
+	var user entities.User
+
+	if err := r.DB.Where("id = ?", id).First(&user).Error; err != nil {
+		return entities.User{}, constants.ErrUserNotFound
+	}
+
+	return user, nil
+}
+
+func (r *UserRepo) Delete(id int) (entities.User, error) {
+	var user entities.User
+
+	if err := r.DB.Where("id = ?", id).First(&user).Error; err != nil {
+		return entities.User{}, constants.ErrUserNotFound
+	}
+
+	user.DeletedAt = gorm.DeletedAt{Time: time.Now(), Valid: true}
+
+	if err := r.DB.Save(&user).Error; err != nil {
+		return entities.User{}, constants.ErrInternalServerError
+	}
+
+	return user, nil
+}
+
+func (r *UserRepo) ResetPassword(id int) (entities.User, error) {
+	var user entities.User
+
+	if err := r.DB.Where("id = ?", id).First(&user).Error; err != nil {
+		return entities.User{}, constants.ErrUserNotFound
+	}
+
+	hash, _ := utils.HashPassword("user")
+	user.Password = hash
+
+	if err := r.DB.Save(&user).Error; err != nil {
+		return entities.User{}, constants.ErrInternalServerError
+	}
+
+	return user, nil
+}
+
+func (r *UserRepo) ChangePassword(id int, newPassword string) (entities.User, error) {
+	var user entities.User
+
+	if err := r.DB.Where("id = ?", id).First(&user).Error; err != nil {
+		return entities.User{}, constants.ErrUserNotFound
+	}
+
+	hash, _ := utils.HashPassword(newPassword)
+	user.Password = hash
+
+	if err := r.DB.Save(&user).Error; err != nil {
+		return entities.User{}, constants.ErrInternalServerError
+	}
+
+	return user, nil
 }
