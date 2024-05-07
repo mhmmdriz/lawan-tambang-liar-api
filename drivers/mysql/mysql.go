@@ -2,6 +2,10 @@ package mysql
 
 import (
 	"fmt"
+	"lawan-tambang-liar/drivers/indonesia_area_api/district"
+	"lawan-tambang-liar/drivers/indonesia_area_api/regency"
+	"lawan-tambang-liar/drivers/mysql/seeder"
+	"lawan-tambang-liar/entities"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -28,9 +32,27 @@ func ConnectDB(config Config) *gorm.DB {
 		panic(err)
 	}
 
-	MigrationUser(db)
+	regencyAPI := regency.NewRegencyAPI()
+	districtAPI := district.NewDistrictAPI()
+
+	Migration(db)
+	seeder.SeedRegencyFromAPI(db, regencyAPI)
+	seeder.SeedDistrictFromAPI(db, districtAPI)
+	seeder.SeedAdmin(db)
+	seeder.SeedUser(db)
+	seeder.SeedReport(db)
+	seeder.SeedReportSolution(db)
+
 	return db
 }
 
-func MigrationUser(db *gorm.DB) {
+func Migration(db *gorm.DB) {
+	db.AutoMigrate(&entities.Regency{})
+	db.AutoMigrate(&entities.District{})
+	db.AutoMigrate(&entities.User{})
+	db.AutoMigrate(&entities.Admin{})
+	db.AutoMigrate(&entities.Report{})
+	db.AutoMigrate(&entities.ReportFile{})
+	db.AutoMigrate(&entities.ReportSolutionProcess{})
+	db.AutoMigrate(&entities.ReportSolutionProcessFile{})
 }
