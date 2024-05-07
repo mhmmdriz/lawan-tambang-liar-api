@@ -60,6 +60,15 @@ func (u *AdminUseCase) Login(admin *entities.Admin) (entities.Admin, error) {
 	return *admin, nil
 }
 
+func (u *AdminUseCase) GetAll() ([]entities.Admin, error) {
+	admins, err := u.repository.GetAll()
+	if err != nil {
+		return []entities.Admin{}, err
+	}
+
+	return admins, nil
+}
+
 func (u *AdminUseCase) GetByID(id int) (entities.Admin, error) {
 	admin, err := u.repository.GetByID(id)
 
@@ -76,6 +85,30 @@ func (u *AdminUseCase) DeleteAccount(id int) (entities.Admin, error) {
 	}
 
 	admin, err := u.repository.DeleteAccount(id)
+
+	if err != nil {
+		return entities.Admin{}, err
+	}
+
+	return admin, nil
+}
+
+func (u *AdminUseCase) ResetPassword(id int) (entities.Admin, error) {
+	admin, err := u.repository.ResetPassword(id)
+
+	if err != nil {
+		return entities.Admin{}, err
+	}
+
+	return admin, nil
+}
+
+func (u *AdminUseCase) ChangePassword(id int, newPassword string) (entities.Admin, error) {
+	if newPassword == "" {
+		return entities.Admin{}, constants.ErrAllFieldsMustBeFilled
+	}
+
+	admin, err := u.repository.ChangePassword(id, newPassword)
 
 	if err != nil {
 		return entities.Admin{}, err

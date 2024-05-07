@@ -58,6 +58,20 @@ func (ac *AdminController) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Login", adminResponse))
 }
 
+func (ac *AdminController) GetAll(c echo.Context) error {
+	admins, err := ac.adminUseCase.GetAll()
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	var adminsResponse []*response.Get
+	for _, admin := range admins {
+		adminsResponse = append(adminsResponse, response.GetFromEntitiesToResponse(&admin))
+	}
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get All Admin", adminsResponse))
+}
+
 func (ac *AdminController) GetByID(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 
@@ -80,4 +94,32 @@ func (ac *AdminController) DeleteAccount(c echo.Context) error {
 	adminResponse := response.DeleteFromEntitiesToResponse(&admin)
 
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Delete Admin", adminResponse))
+}
+
+func (ac *AdminController) ResetPassword(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	admin, err := ac.adminUseCase.ResetPassword(id)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+	adminResponse := response.PasswordFromEntitiesToResponse(&admin)
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Reset Password", adminResponse))
+}
+
+func (ac *AdminController) ChangePassword(c echo.Context) error {
+	admin_id, err := utils.GetUserIDFromJWT(c)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	admin, err := ac.adminUseCase.ChangePassword(admin_id, c.FormValue("new_password"))
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	adminResponse := response.PasswordFromEntitiesToResponse(&admin)
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Change Password", adminResponse))
 }
