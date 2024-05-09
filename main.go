@@ -7,6 +7,7 @@ import (
 	regency_cl "lawan-tambang-liar/controllers/regency"
 	report_cl "lawan-tambang-liar/controllers/report"
 	report_solution_cl "lawan-tambang-liar/controllers/report_solution_process"
+	report_upvote_cl "lawan-tambang-liar/controllers/report_upvote"
 	user_cl "lawan-tambang-liar/controllers/user"
 	upload_file_gcs_api "lawan-tambang-liar/drivers/google_cloud_storage"
 	district_api "lawan-tambang-liar/drivers/indonesia_area_api/district"
@@ -19,6 +20,7 @@ import (
 	report_file_rp "lawan-tambang-liar/drivers/mysql/report_file"
 	report_solution_rp "lawan-tambang-liar/drivers/mysql/report_solution_process"
 	report_solution_file_rp "lawan-tambang-liar/drivers/mysql/report_solution_process_file"
+	report_upvote_rp "lawan-tambang-liar/drivers/mysql/report_upvote"
 	user_rp "lawan-tambang-liar/drivers/mysql/user"
 	"lawan-tambang-liar/routes"
 	admin_uc "lawan-tambang-liar/usecases/admin"
@@ -28,6 +30,7 @@ import (
 	report_file_uc "lawan-tambang-liar/usecases/report_file"
 	report_solution_uc "lawan-tambang-liar/usecases/report_solution_process"
 	report_solution_file_uc "lawan-tambang-liar/usecases/report_solution_process_file"
+	report_upvote_uc "lawan-tambang-liar/usecases/report_upvote"
 	user_uc "lawan-tambang-liar/usecases/user"
 
 	"github.com/labstack/echo/v4"
@@ -72,6 +75,10 @@ func main() {
 	reportSolutionUsecase := report_solution_uc.NewReportSolutionProcessUseCase(reportSolutionRepo)
 	ReportSolutionProcessController := report_solution_cl.NewReportSolutionProcessController(reportUsecase, reportSolutionUsecase, reportSolutionFileUseCase)
 
+	reportUpvoteRepo := report_upvote_rp.NewReportUpvoteRepo(DB)
+	reportUpvoteUseCase := report_upvote_uc.NewReportUpvoteUseCase(reportUpvoteRepo)
+	ReportUpvoteController := report_upvote_cl.NewReportUpvoteController(reportUsecase, reportUpvoteUseCase)
+
 	routes := routes.RouteController{
 		RegencyController:               RegencyController,
 		DistrictController:              DistrictController,
@@ -79,6 +86,7 @@ func main() {
 		AdminController:                 AdminController,
 		ReportController:                ReportController,
 		ReportSolutionProcessController: ReportSolutionProcessController,
+		ReportUpvoteController:          ReportUpvoteController,
 	}
 
 	routes.InitRoute(e)

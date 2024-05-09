@@ -199,3 +199,37 @@ func (r *ReportRepo) GetMetaData(limit int, page int, search string, filter map[
 
 	return metadata, nil
 }
+
+func (r *ReportRepo) IncreaseUpvote(reportID int) error {
+	var report entities.Report
+
+	// Increase the upvote count of the report
+	if err := r.DB.First(&report, reportID).Error; err != nil {
+		return constants.ErrReportNotFound
+	}
+
+	report.Upvotes++
+
+	if err := r.DB.Save(&report).Error; err != nil {
+		return constants.ErrInternalServerError
+	}
+
+	return nil
+}
+
+func (r *ReportRepo) DecreaseUpvote(reportID int) error {
+	var report entities.Report
+
+	// Decrease the upvote count of the report
+	if err := r.DB.First(&report, reportID).Error; err != nil {
+		return constants.ErrReportNotFound
+	}
+
+	report.Upvotes--
+
+	if err := r.DB.Save(&report).Error; err != nil {
+		return constants.ErrInternalServerError
+	}
+
+	return nil
+}

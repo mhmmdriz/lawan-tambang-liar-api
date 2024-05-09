@@ -118,3 +118,31 @@ func (u *ReportUseCase) GetMetaData(limit int, page int, search string, filter m
 
 	return meta, nil
 }
+
+func (u *ReportUseCase) IncreaseUpvote(reportID int) error {
+	if reportID == 0 {
+		return constants.ErrIDMustBeFilled
+	}
+
+	err := u.repository.IncreaseUpvote(reportID)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *ReportUseCase) DecreaseUpvote(reportID int) error {
+	if reportID == 0 {
+		return constants.ErrIDMustBeFilled
+	}
+
+	err := u.repository.DecreaseUpvote(reportID)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

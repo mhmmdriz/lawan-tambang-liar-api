@@ -6,6 +6,7 @@ import (
 	"lawan-tambang-liar/controllers/regency"
 	"lawan-tambang-liar/controllers/report"
 	"lawan-tambang-liar/controllers/report_solution_process"
+	"lawan-tambang-liar/controllers/report_upvote"
 	"lawan-tambang-liar/controllers/user"
 	"lawan-tambang-liar/middlewares"
 	"os"
@@ -22,6 +23,7 @@ type RouteController struct {
 	AdminController                 *admin.AdminController
 	ReportController                *report.ReportController
 	ReportSolutionProcessController *report_solution_process.ReportSolutionProcessController
+	ReportUpvoteController          *report_upvote.ReportUpvoteController
 }
 
 func (r *RouteController) InitRoute(e *echo.Echo) {
@@ -65,5 +67,6 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	user.GET("/reports/:id", r.ReportController.GetByID)
 	user.DELETE("/reports/:id", r.ReportController.Delete)
 	user.PUT("/reports/:id/update", r.ReportController.Update)
+	user.POST("/reports/:id/upvote", r.ReportUpvoteController.ToggleUpvote)
 
 }
