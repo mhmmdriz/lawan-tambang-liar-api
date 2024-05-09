@@ -21,22 +21,23 @@ type Metadata struct {
 }
 
 type Report struct {
-	ID          int
-	UserID      int
-	Title       string
-	Description string
-	RegencyID   string `gorm:"type:varchar;size:191"`
-	DistrictID  string `gorm:"type:varchar;size:191"`
-	Address     string
-	Status      string `gorm:"default:'pending';type:enum('pending', 'verified', 'on progress', 'done', 'rejected')"`
-	Upvotes     int
-	CreatedAt   time.Time      `gorm:"autoCreateTime"`
-	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt   gorm.DeletedAt `gorm:"index"`
-	User        User           `gorm:"foreignKey:UserID;references:ID"`
-	Regency     Regency        `gorm:"foreignKey:RegencyID;references:ID"`
-	District    District       `gorm:"foreignKey:DistrictID;references:ID"`
-	Files       []ReportFile   `gorm:"foreignKey:ReportID;references:ID"`
+	ID                      int
+	UserID                  int
+	Title                   string
+	Description             string
+	RegencyID               string `gorm:"type:varchar;size:191"`
+	DistrictID              string `gorm:"type:varchar;size:191"`
+	Address                 string
+	Status                  string `gorm:"default:'pending';type:enum('pending', 'verified', 'on progress', 'finished', 'rejected')"`
+	Upvotes                 int
+	CreatedAt               time.Time               `gorm:"autoCreateTime"`
+	UpdatedAt               time.Time               `gorm:"autoUpdateTime"`
+	DeletedAt               gorm.DeletedAt          `gorm:"index"`
+	User                    User                    `gorm:"foreignKey:UserID;references:ID"`
+	Regency                 Regency                 `gorm:"foreignKey:RegencyID;references:ID"`
+	District                District                `gorm:"foreignKey:DistrictID;references:ID"`
+	Files                   []ReportFile            `gorm:"foreignKey:ReportID;references:ID"`
+	ReportSolutionProcesses []ReportSolutionProcess `gorm:"foreignKey:ReportID;references:ID"`
 }
 
 type ReportRepositoryInterface interface {
@@ -63,4 +64,5 @@ type ReportUseCaseInterface interface {
 	GetMetaData(limit int, page int, search string, filter map[string]interface{}) (Metadata, error)
 	IncreaseUpvote(reportID int) error
 	DecreaseUpvote(reportID int) error
+	GetDistanceDuration(reportID int, userID int) (DistanceMatrix, error)
 }

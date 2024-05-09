@@ -10,6 +10,7 @@ require (
 	github.com/labstack/echo/v4 v4.12.0
 	golang.org/x/crypto v0.22.0
 	google.golang.org/api v0.177.0
+	googlemaps.github.io/maps v1.7.0
 	gorm.io/driver/mysql v1.5.6
 	gorm.io/gorm v1.25.10
 )

@@ -10,6 +10,7 @@ import (
 	report_upvote_cl "lawan-tambang-liar/controllers/report_upvote"
 	user_cl "lawan-tambang-liar/controllers/user"
 	upload_file_gcs_api "lawan-tambang-liar/drivers/google_cloud_storage"
+	"lawan-tambang-liar/drivers/google_maps_api"
 	district_api "lawan-tambang-liar/drivers/indonesia_area_api/district"
 	regency_api "lawan-tambang-liar/drivers/indonesia_area_api/regency"
 	"lawan-tambang-liar/drivers/mysql"
@@ -32,14 +33,20 @@ import (
 	report_solution_file_uc "lawan-tambang-liar/usecases/report_solution_process_file"
 	report_upvote_uc "lawan-tambang-liar/usecases/report_upvote"
 	user_uc "lawan-tambang-liar/usecases/user"
+	"os"
 
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	config.LoadEnv()
+	// For local development only
+	// config.LoadEnv()
+
 	config.InitConfigMySQL()
 	DB := mysql.ConnectDB(config.InitConfigMySQL())
+
+	gcs_credentials := os.Getenv("GCS_CREDENTIALS")
+	gmaps_api_key := os.Getenv("GMAPS_API_KEY")
 
 	e := echo.New()
 
@@ -61,15 +68,16 @@ func main() {
 	adminUsecase := admin_uc.NewAdminUseCase(adminRepo)
 	AdminController := admin_cl.NewAdminController(adminUsecase)
 
+	gmapsAPI := google_maps_api.NewGoogleMapsAPI(gmaps_api_key)
 	reportFileRepo := report_file_rp.NewReportFileRepo(DB)
-	uploadFileGCSAPI := upload_file_gcs_api.NewFileUploadAPI("report_files/")
+	uploadFileGCSAPI := upload_file_gcs_api.NewFileUploadAPI(gcs_credentials, "report_files/")
 	reportFileUseCase := report_file_uc.NewReportFileUseCase(reportFileRepo, uploadFileGCSAPI)
 	reportRepo := report_rp.NewReportRepo(DB)
-	reportUsecase := report_uc.NewReportUseCase(reportRepo)
+	reportUsecase := report_uc.NewReportUseCase(reportRepo, adminRepo, gmapsAPI)
 	ReportController := report_cl.NewReportController(reportUsecase, reportFileUseCase)
 
 	reportSolutionFileRepo := report_solution_file_rp.NewReportSolutionProcessFileRepo(DB)
-	uploadFileReportSolutionGCSAPI := upload_file_gcs_api.NewFileUploadAPI("report_solution_files/")
+	uploadFileReportSolutionGCSAPI := upload_file_gcs_api.NewFileUploadAPI(gcs_credentials, "report_solution_files/")
 	reportSolutionFileUseCase := report_solution_file_uc.NewReportSolutionProcessFileUsecase(reportSolutionFileRepo, uploadFileReportSolutionGCSAPI)
 	reportSolutionRepo := report_solution_rp.NewReportSolutionProcessRepo(DB)
 	reportSolutionUsecase := report_solution_uc.NewReportSolutionProcessUseCase(reportSolutionRepo)

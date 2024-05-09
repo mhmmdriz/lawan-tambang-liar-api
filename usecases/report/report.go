@@ -6,12 +6,16 @@ import (
 )
 
 type ReportUseCase struct {
-	repository entities.ReportRepositoryInterface
+	report_repository entities.ReportRepositoryInterface
+	admin_repository  entities.AdminRepositoryInterface
+	gmaps_api         entities.GoogleMapsAPIInterface
 }
 
-func NewReportUseCase(repository entities.ReportRepositoryInterface) *ReportUseCase {
+func NewReportUseCase(report_repository entities.ReportRepositoryInterface, admin_repository entities.AdminRepositoryInterface, gmaps_api entities.GoogleMapsAPIInterface) *ReportUseCase {
 	return &ReportUseCase{
-		repository: repository,
+		report_repository: report_repository,
+		admin_repository:  admin_repository,
+		gmaps_api:         gmaps_api,
 	}
 }
 
@@ -20,7 +24,7 @@ func (u *ReportUseCase) Create(report *entities.Report) (entities.Report, error)
 		return entities.Report{}, constants.ErrAllFieldsMustBeFilled
 	}
 
-	err := u.repository.Create(report)
+	err := u.report_repository.Create(report)
 
 	if err != nil {
 		return entities.Report{}, constants.ErrInternalServerError
@@ -34,7 +38,7 @@ func (u *ReportUseCase) GetPaginated(limit int, page int, search string, filter 
 		return nil, constants.ErrLimitAndPageMustBeFilled
 	}
 
-	reports, err := u.repository.GetPaginated(limit, page, search, filter, sortBy, sortType)
+	reports, err := u.report_repository.GetPaginated(limit, page, search, filter, sortBy, sortType)
 
 	if err != nil {
 		return nil, constants.ErrInternalServerError
@@ -44,7 +48,7 @@ func (u *ReportUseCase) GetPaginated(limit int, page int, search string, filter 
 }
 
 func (u *ReportUseCase) GetByID(id int) (entities.Report, error) {
-	report, err := u.repository.GetByID(id)
+	report, err := u.report_repository.GetByID(id)
 
 	if err != nil {
 		return entities.Report{}, err
@@ -58,7 +62,7 @@ func (u *ReportUseCase) Update(report entities.Report) (entities.Report, error) 
 		return entities.Report{}, constants.ErrIDMustBeFilled
 	}
 
-	report, err := u.repository.Update(report)
+	report, err := u.report_repository.Update(report)
 
 	if err != nil {
 		return entities.Report{}, err
@@ -72,7 +76,7 @@ func (u *ReportUseCase) Delete(reportID int, userID int) (entities.Report, error
 		return entities.Report{}, constants.ErrIDMustBeFilled
 	}
 
-	report, err := u.repository.Delete(reportID, userID)
+	report, err := u.report_repository.Delete(reportID, userID)
 
 	if err != nil {
 		return entities.Report{}, err
@@ -86,7 +90,7 @@ func (u *ReportUseCase) AdminDelete(reportID int) (entities.Report, error) {
 		return entities.Report{}, constants.ErrIDMustBeFilled
 	}
 
-	report, err := u.repository.AdminDelete(reportID)
+	report, err := u.report_repository.AdminDelete(reportID)
 
 	if err != nil {
 		return entities.Report{}, err
@@ -100,7 +104,7 @@ func (u *ReportUseCase) UpdateStatus(reportID int, status string) error {
 		return constants.ErrIDMustBeFilled
 	}
 
-	err := u.repository.UpdateStatus(reportID, status)
+	err := u.report_repository.UpdateStatus(reportID, status)
 
 	if err != nil {
 		return err
@@ -110,7 +114,7 @@ func (u *ReportUseCase) UpdateStatus(reportID int, status string) error {
 }
 
 func (u *ReportUseCase) GetMetaData(limit int, page int, search string, filter map[string]interface{}) (entities.Metadata, error) {
-	meta, err := u.repository.GetMetaData(limit, page, search, filter)
+	meta, err := u.report_repository.GetMetaData(limit, page, search, filter)
 
 	if err != nil {
 		return entities.Metadata{}, constants.ErrInternalServerError
@@ -145,4 +149,27 @@ func (u *ReportUseCase) DecreaseUpvote(reportID int) error {
 	}
 
 	return nil
+}
+  
+func (u *ReportUseCase) GetDistanceDuration(reportID int, adminID int) (entities.DistanceMatrix, error) {
+	report, err := u.report_repository.GetByID(reportID)
+	if err != nil {
+		return entities.DistanceMatrix{}, err
+	}
+
+	admin, err := u.admin_repository.GetByID(adminID)
+	if err != nil {
+		return entities.DistanceMatrix{}, err
+	}
+
+	originAddress := admin.Address + ", " + admin.District.Name + ", " + admin.Regency.Name
+	destinationAddress := report.Address + ", " + report.District.Name + ", " + report.Regency.Name
+
+	distanceMatrix, err := u.gmaps_api.GetDistanceMatrix(originAddress, destinationAddress)
+
+	if err != nil {
+		return entities.DistanceMatrix{}, err
+	}
+
+	return distanceMatrix, nil
 }

@@ -11,11 +11,12 @@ type ReportSolutionProcess struct {
 	ReportID                   int
 	AdminID                    int
 	Message                    string
-	Status                     string                      `gorm:"type:enum('verified', 'on progress', 'done', 'rejected')"`
+	Status                     string                      `gorm:"type:enum('verified', 'on progress', 'finished', 'rejected')"`
 	CreatedAt                  time.Time                   `gorm:"autoCreateTime"`
 	UpdatedAt                  time.Time                   `gorm:"autoUpdateTime"`
 	DeletedAt                  gorm.DeletedAt              `gorm:"index"`
 	ReportSolutionProcessFiles []ReportSolutionProcessFile `gorm:"foreignKey:ReportSolutionProcessID;references:ID"`
+	Admin                      Admin                       `gorm:"foreignKey:AdminID;references:ID"`
 }
 
 type ReportSolutionProcessRepositoryInterface interface {
