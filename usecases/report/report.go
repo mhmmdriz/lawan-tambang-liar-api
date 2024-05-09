@@ -145,3 +145,31 @@ func (u *ReportUseCase) GetDistanceDuration(reportID int, adminID int) (entities
 
 	return distanceMatrix, nil
 }
+
+func (u *ReportUseCase) IncreaseUpvote(reportID int) error {
+	if reportID == 0 {
+		return constants.ErrIDMustBeFilled
+	}
+
+	err := u.report_repository.IncreaseUpvote(reportID)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *ReportUseCase) DecreaseUpvote(reportID int) error {
+	if reportID == 0 {
+		return constants.ErrIDMustBeFilled
+	}
+
+	err := u.report_repository.DecreaseUpvote(reportID)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

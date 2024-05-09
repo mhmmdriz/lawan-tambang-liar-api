@@ -55,4 +55,5 @@ func Migration(db *gorm.DB) {
 	db.AutoMigrate(&entities.ReportFile{})
 	db.AutoMigrate(&entities.ReportSolutionProcess{})
 	db.AutoMigrate(&entities.ReportSolutionProcessFile{})
+	db.AutoMigrate(&entities.ReportUpvote{})
 }
