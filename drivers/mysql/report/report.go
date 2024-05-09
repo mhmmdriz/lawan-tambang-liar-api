@@ -22,6 +22,10 @@ func (r *ReportRepo) Create(report *entities.Report) error {
 	if err := r.DB.Create(&report).Error; err != nil {
 		return err
 	}
+	if err := r.DB.Preload("User").Preload("Regency").Preload("District").First(&report, report.ID).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -68,7 +72,7 @@ func (r *ReportRepo) Update(report entities.Report) (entities.Report, error) {
 	// Check if the report exists
 	var reportDB entities.Report
 
-	if err := r.DB.First(&reportDB, report.ID).Error; err != nil {
+	if err := r.DB.Preload("User").Preload("Regency").Preload("District").First(&reportDB, report.ID).Error; err != nil {
 		return entities.Report{}, constants.ErrReportNotFound
 	}
 
@@ -89,6 +93,9 @@ func (r *ReportRepo) Update(report entities.Report) (entities.Report, error) {
 	}
 
 	report.Status = reportDB.Status
+	report.User = reportDB.User
+	report.Regency = reportDB.Regency
+	report.District = reportDB.District
 
 	return report, nil
 }
