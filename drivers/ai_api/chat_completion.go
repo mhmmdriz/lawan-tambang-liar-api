@@ -6,17 +6,17 @@ import (
 	"net/http"
 )
 
-type AIChatCompletionAPI struct {
+type AIAPI struct {
 	APIURL string
 }
 
-func NewAIChatCompletionAPI() *AIChatCompletionAPI {
-	return &AIChatCompletionAPI{
+func NewAIAPI() *AIAPI {
+	return &AIAPI{
 		APIURL: "https://wgpt-production.up.railway.app/v1/chat/completions",
 	}
 }
 
-func (a *AIChatCompletionAPI) GetChatCompletion(messages []map[string]string) (string, error) {
+func (a *AIAPI) GetChatCompletion(messages []map[string]string) (string, error) {
 	// Membuat payload dari data pesan
 	payload, err := json.Marshal(map[string]interface{}{
 		"model":    "gpt-3.5-turbo",

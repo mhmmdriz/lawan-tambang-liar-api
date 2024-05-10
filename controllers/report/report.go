@@ -279,3 +279,14 @@ func (rc *ReportController) GetDistanceDuration(c echo.Context) error {
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Distance & Duration", distanceDurationResponse))
 
 }
+
+func (rc *ReportController) GetDescriptionRecommendation(c echo.Context) error {
+	location := c.FormValue("location")
+
+	descriptionRecommendation, err := rc.reportUseCase.GetDescriptionRecommendation(location)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Description Recommendation", descriptionRecommendation))
+}

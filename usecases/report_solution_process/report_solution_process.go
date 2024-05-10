@@ -83,11 +83,13 @@ func (u *ReportSolutionProcessUseCase) GetMessageRecommendation(action string) (
 			{"role": "assistant", "content": "Anda sebagai admin website yang bertugas untuk memverifikasi sebuah laporan tambang liar, memberikan progress penyelesaian, dan menyelesaikan laporan"},
 			{"role": "user", "content": "Saya seorang admin, ketika saya menyelesaikan laporan, saya harus menambahkan sebuah pesan. Berikan saya contoh pesan yang baik saat menyelesaikan laporan tersebut ! Sebagai contoh : Laporan anda telah selesai diproses, terima kasih atas kerjasamanya"},
 		}
+	} else {
+		return "", constants.ErrActionNotFound
 	}
 	content, err := u.ai_api.GetChatCompletion(messages)
 
 	if err != nil {
-		return "", err
+		return "", constants.ErrInternalServerError
 	}
 
 	return content, nil

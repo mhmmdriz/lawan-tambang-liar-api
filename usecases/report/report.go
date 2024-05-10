@@ -9,13 +9,15 @@ type ReportUseCase struct {
 	report_repository entities.ReportRepositoryInterface
 	admin_repository  entities.AdminRepositoryInterface
 	gmaps_api         entities.GoogleMapsAPIInterface
+	ai_api            entities.AIReportSolutionAPIInterface
 }
 
-func NewReportUseCase(report_repository entities.ReportRepositoryInterface, admin_repository entities.AdminRepositoryInterface, gmaps_api entities.GoogleMapsAPIInterface) *ReportUseCase {
+func NewReportUseCase(report_repository entities.ReportRepositoryInterface, admin_repository entities.AdminRepositoryInterface, gmaps_api entities.GoogleMapsAPIInterface, ai_api entities.AIReportAPIInterface) *ReportUseCase {
 	return &ReportUseCase{
 		report_repository: report_repository,
 		admin_repository:  admin_repository,
 		gmaps_api:         gmaps_api,
+		ai_api:            ai_api,
 	}
 }
 
@@ -144,4 +146,19 @@ func (u *ReportUseCase) GetDistanceDuration(reportID int, adminID int) (entities
 	}
 
 	return distanceMatrix, nil
+}
+
+func (u *ReportUseCase) GetDescriptionRecommendation(location string) (string, error) {
+	messages := []map[string]string{
+		{"role": "assistant", "content": "Anda sebagai masyarakat pengguna website lawan tambang liar dan bertugas untuk membuat laporan tambang liar"},
+		{"role": "user", "content": "Saya masyarakat pengguna website lawan tambang liar di Provinsi Kepulauan Bangka Belitung. Berikan saya contoh deskripsi yang baik saat membuat laporan tambang liar ! Dan saya akan mengirimkan bukti fotonya juga. Tambang liar tersebut berada di" + location},
+	}
+
+	content, err := u.ai_api.GetChatCompletion(messages)
+
+	if err != nil {
+		return "", constants.ErrInternalServerError
+	}
+
+	return content, nil
 }

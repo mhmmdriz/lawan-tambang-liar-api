@@ -66,15 +66,15 @@ func main() {
 	adminUsecase := admin_uc.NewAdminUseCase(adminRepo)
 	AdminController := admin_cl.NewAdminController(adminUsecase)
 
+	aiAPI := ai_api.NewAIAPI()
 	gmapsAPI := google_maps_api.NewGoogleMapsAPI(gmaps_api_key)
 	reportFileRepo := report_file_rp.NewReportFileRepo(DB)
 	uploadFileGCSAPI := upload_file_gcs_api.NewFileUploadAPI(gcs_credentials, "report_files/")
 	reportFileUseCase := report_file_uc.NewReportFileUseCase(reportFileRepo, uploadFileGCSAPI)
 	reportRepo := report_rp.NewReportRepo(DB)
-	reportUsecase := report_uc.NewReportUseCase(reportRepo, adminRepo, gmapsAPI)
+	reportUsecase := report_uc.NewReportUseCase(reportRepo, adminRepo, gmapsAPI, aiAPI)
 	ReportController := report_cl.NewReportController(reportUsecase, reportFileUseCase)
 
-	aiAPI := ai_api.NewAIChatCompletionAPI()
 	reportSolutionFileRepo := report_solution_file_rp.NewReportSolutionProcessFileRepo(DB)
 	uploadFileReportSolutionGCSAPI := upload_file_gcs_api.NewFileUploadAPI(gcs_credentials, "report_solution_files/")
 	reportSolutionFileUseCase := report_solution_file_uc.NewReportSolutionProcessFileUsecase(reportSolutionFileRepo, uploadFileReportSolutionGCSAPI)
