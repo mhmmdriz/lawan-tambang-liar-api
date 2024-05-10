@@ -242,3 +242,14 @@ func (rc *ReportSolutionProcessController) Update(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Update Report Solution Process", reportSolutionResponse))
 }
+
+func (rc *ReportSolutionProcessController) GetMessageRecommendation(c echo.Context) error {
+	action := c.Param("action")
+
+	message, err := rc.reportSolutionUseCase.GetMessageRecommendation(action)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Message Recommendation", message))
+}

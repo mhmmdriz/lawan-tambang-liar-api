@@ -7,11 +7,13 @@ import (
 
 type ReportSolutionProcessUseCase struct {
 	repository entities.ReportSolutionProcessRepositoryInterface
+	ai_api     entities.AIReportSolutionAPIInterface
 }
 
-func NewReportSolutionProcessUseCase(repository entities.ReportSolutionProcessRepositoryInterface) *ReportSolutionProcessUseCase {
+func NewReportSolutionProcessUseCase(repository entities.ReportSolutionProcessRepositoryInterface, ai_api entities.AIReportSolutionAPIInterface) *ReportSolutionProcessUseCase {
 	return &ReportSolutionProcessUseCase{
 		repository: repository,
+		ai_api:     ai_api,
 	}
 }
 
@@ -61,4 +63,32 @@ func (u *ReportSolutionProcessUseCase) Update(reportSolutionProcess entities.Rep
 	}
 
 	return reportSolution, nil
+}
+
+func (u *ReportSolutionProcessUseCase) GetMessageRecommendation(action string) (string, error) {
+	// Membuat payload dari data pesan
+	var messages []map[string]string
+	if action == "verify" {
+		messages = []map[string]string{
+			{"role": "assistant", "content": "Anda sebagai admin website yang bertugas untuk memverifikasi sebuah laporan tambang liar, memberikan progress penyelesaian, dan menyelesaikan laporan"},
+			{"role": "user", "content": "Saya seorang admin, ketika saya memverifikasi laporan, saya harus menambahkan sebuah pesan. Berikan saya contoh pesan yang baik dalam memverifikasi laporan tersebut ! Sebagai contoh : Laporan anda sudah diverifikasi, laporan anda akan segera diproses."},
+		}
+	} else if action == "progress" {
+		messages = []map[string]string{
+			{"role": "assistant", "content": "Anda sebagai admin website yang bertugas untuk memverifikasi sebuah laporan tambang liar, memberikan progress penyelesaian, dan menyelesaikan laporan"},
+			{"role": "user", "content": "Saya seorang admin, ketika saya menambah sebuah progress, saya harus menambahkan sebuah pesan. Berikan saya contoh pesan yang baik saat menambahkan progress penyelesaian tersebut ! Sebagai contoh : Laporan anda sedang diproses, dst"},
+		}
+	} else if action == "finish" {
+		messages = []map[string]string{
+			{"role": "assistant", "content": "Anda sebagai admin website yang bertugas untuk memverifikasi sebuah laporan tambang liar, memberikan progress penyelesaian, dan menyelesaikan laporan"},
+			{"role": "user", "content": "Saya seorang admin, ketika saya menyelesaikan laporan, saya harus menambahkan sebuah pesan. Berikan saya contoh pesan yang baik saat menyelesaikan laporan tersebut ! Sebagai contoh : Laporan anda telah selesai diproses, terima kasih atas kerjasamanya"},
+		}
+	}
+	content, err := u.ai_api.GetChatCompletion(messages)
+
+	if err != nil {
+		return "", err
+	}
+
+	return content, nil
 }

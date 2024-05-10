@@ -8,6 +8,7 @@ import (
 	report_cl "lawan-tambang-liar/controllers/report"
 	report_solution_cl "lawan-tambang-liar/controllers/report_solution_process"
 	user_cl "lawan-tambang-liar/controllers/user"
+	ai_api "lawan-tambang-liar/drivers/ai_api"
 	upload_file_gcs_api "lawan-tambang-liar/drivers/google_cloud_storage"
 	"lawan-tambang-liar/drivers/google_maps_api"
 	district_api "lawan-tambang-liar/drivers/indonesia_area_api/district"
@@ -73,11 +74,12 @@ func main() {
 	reportUsecase := report_uc.NewReportUseCase(reportRepo, adminRepo, gmapsAPI)
 	ReportController := report_cl.NewReportController(reportUsecase, reportFileUseCase)
 
+	aiAPI := ai_api.NewAIChatCompletionAPI()
 	reportSolutionFileRepo := report_solution_file_rp.NewReportSolutionProcessFileRepo(DB)
 	uploadFileReportSolutionGCSAPI := upload_file_gcs_api.NewFileUploadAPI(gcs_credentials, "report_solution_files/")
 	reportSolutionFileUseCase := report_solution_file_uc.NewReportSolutionProcessFileUsecase(reportSolutionFileRepo, uploadFileReportSolutionGCSAPI)
 	reportSolutionRepo := report_solution_rp.NewReportSolutionProcessRepo(DB)
-	reportSolutionUsecase := report_solution_uc.NewReportSolutionProcessUseCase(reportSolutionRepo)
+	reportSolutionUsecase := report_solution_uc.NewReportSolutionProcessUseCase(reportSolutionRepo, aiAPI)
 	ReportSolutionProcessController := report_solution_cl.NewReportSolutionProcessController(reportUsecase, reportSolutionUsecase, reportSolutionFileUseCase)
 
 	routes := routes.RouteController{
