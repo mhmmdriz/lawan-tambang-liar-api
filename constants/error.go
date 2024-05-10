@@ -19,4 +19,5 @@ var (
 	ErrUserNotFound                  = errors.New("user not found")
 	ErrAdminNotFound                 = errors.New("admin not found")
 	ErrSuperAdminCannotBeDeleted     = errors.New("super admin cannot be deleted")
+	ErrInvalidJWT                    = errors.New("invalid jwt")
 )
