@@ -53,6 +53,10 @@ type ReportRepositoryInterface interface {
 	DecreaseUpvote(reportID int) error
 }
 
+type AIReportAPIInterface interface {
+	GetChatCompletion(messages []map[string]string) (string, error)
+}
+
 type ReportUseCaseInterface interface {
 	Create(report *Report) (Report, error)
 	GetPaginated(limit int, page int, search string, filter map[string]interface{}, sortBy string, sortType string) ([]Report, error)
@@ -63,6 +67,7 @@ type ReportUseCaseInterface interface {
 	UpdateStatus(reportID int, status string) error
 	GetMetaData(limit int, page int, search string, filter map[string]interface{}) (Metadata, error)
 	GetDistanceDuration(reportID int, userID int) (DistanceMatrix, error)
+	GetDescriptionRecommendation(location string) (string, error)
 	IncreaseUpvote(reportID int) error
 	DecreaseUpvote(reportID int) error
 }
