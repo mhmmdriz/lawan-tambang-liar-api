@@ -60,8 +60,8 @@ func (u *ReportUseCase) GetByID(id int) (entities.Report, error) {
 }
 
 func (u *ReportUseCase) Update(report entities.Report) (entities.Report, error) {
-	if report.ID == 0 {
-		return entities.Report{}, constants.ErrIDMustBeFilled
+	if report.UserID == 0 || report.Title == "" || report.Description == "" || report.RegencyID == "" || report.DistrictID == "" || report.Address == "" {
+		return entities.Report{}, constants.ErrAllFieldsMustBeFilled
 	}
 
 	report, err := u.report_repository.Update(report)
@@ -149,6 +149,10 @@ func (u *ReportUseCase) GetDistanceDuration(reportID int, adminID int) (entities
 }
 
 func (u *ReportUseCase) GetDescriptionRecommendation(location string) (string, error) {
+	if location == "" {
+		return "", constants.ErrAllFieldsMustBeFilled
+	}
+
 	messages := []map[string]string{
 		{"role": "assistant", "content": "Anda sebagai masyarakat pengguna website lawan tambang liar dan bertugas untuk membuat laporan tambang liar"},
 		{"role": "user", "content": "Saya masyarakat pengguna website lawan tambang liar di Provinsi Kepulauan Bangka Belitung. Berikan saya contoh deskripsi yang baik saat membuat laporan tambang liar ! Dan saya akan mengirimkan bukti fotonya juga. Tambang liar tersebut berada di" + location},

@@ -37,11 +37,12 @@ import (
 	"os"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	// For local development only
-	// config.LoadEnv()
+	config.LoadEnv()
 
 	config.InitConfigMySQL()
 	DB := mysql.ConnectDB(config.InitConfigMySQL())
@@ -50,6 +51,7 @@ func main() {
 	gmaps_api_key := os.Getenv("GMAPS_API_KEY")
 
 	e := echo.New()
+	e.Pre(middleware.RemoveTrailingSlash())
 
 	regencyAPI := regency_api.NewRegencyAPI()
 	regencyRepo := regency_rp.NewRegencyRepo(DB)

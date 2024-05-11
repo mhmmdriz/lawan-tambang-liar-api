@@ -21,6 +21,11 @@ func ConvertResponseCode(err error) int {
 		constants.ErrReportSolutionProcessNotFound,
 		constants.ErrAdminNotFound,
 		constants.ErrSuperAdminCannotBeDeleted,
+		constants.ErrInvalidJWT,
+		constants.ErrReportAlreadyVerified,
+		constants.ErrReportAlreadyRejected,
+		constants.ErrReportAlreadyOnProgress,
+		constants.ErrReportAlreadyFinished,
 	}
 
 	if contains(badRequestErrors, err) {

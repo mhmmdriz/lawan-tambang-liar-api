@@ -151,6 +151,44 @@ func (r *ReportRepo) UpdateStatus(reportID int, status string) error {
 		return constants.ErrReportNotFound
 	}
 
+	if status == "verified" {
+		if status == report.Status {
+			return constants.ErrReportAlreadyVerified
+		} else if report.Status == "rejected" {
+			return constants.ErrReportAlreadyRejected
+		} else if report.Status == "on progress" {
+			return constants.ErrReportAlreadyOnProgress
+		} else if report.Status == "finished" {
+			return constants.ErrReportAlreadyFinished
+		}
+	} else if status == "rejected" {
+		if status == report.Status {
+			return constants.ErrReportAlreadyRejected
+		} else if report.Status == "verified" {
+			return constants.ErrReportAlreadyVerified
+		} else if report.Status == "on progress" {
+			return constants.ErrReportAlreadyOnProgress
+		} else if report.Status == "finished" {
+			return constants.ErrReportAlreadyFinished
+		}
+	} else if status == "on progress" {
+		if status == report.Status {
+			return constants.ErrReportAlreadyOnProgress
+		} else if report.Status == "finished" {
+			return constants.ErrReportAlreadyFinished
+		} else if report.Status == "rejected" {
+			return constants.ErrReportAlreadyRejected
+		}
+	} else if status == "finished" {
+		if status == report.Status {
+			return constants.ErrReportAlreadyFinished
+		} else if report.Status == "verified" {
+			return constants.ErrReportAlreadyVerified
+		} else if report.Status == "rejected" {
+			return constants.ErrReportAlreadyRejected
+		}
+	}
+
 	report.Status = status
 
 	if err := r.DB.Save(&report).Error; err != nil {
