@@ -28,7 +28,7 @@ func SeedReportSolution(db *gorm.DB) {
 				AdminID:  3,
 				Message:  "Saat ini laporan ini sedang dalam proses penanganan.",
 				Status:   "on progress",
-				ReportSolutionProcessFiles: []entities.ReportSolutionProcessFile{
+				Files: []entities.ReportSolutionProcessFile{
 					{
 						Path: "report_solution_files/example1.jgp",
 					},
@@ -45,7 +45,7 @@ func SeedReportSolution(db *gorm.DB) {
 				AdminID:  4,
 				Message:  "Saat ini laporan ini sedang dalam proses penanganan.",
 				Status:   "on progress",
-				ReportSolutionProcessFiles: []entities.ReportSolutionProcessFile{
+				Files: []entities.ReportSolutionProcessFile{
 					{
 						Path: "report_solution_files/example1.jgp",
 					},
@@ -59,7 +59,7 @@ func SeedReportSolution(db *gorm.DB) {
 				AdminID:  4,
 				Message:  "Laporan ini sudah selesai ditangani oleh admin kami. Terima kasih atas laporannya.",
 				Status:   "finished",
-				ReportSolutionProcessFiles: []entities.ReportSolutionProcessFile{
+				Files: []entities.ReportSolutionProcessFile{
 					{
 						Path: "report_solution_files/example1.jgp",
 					},
