@@ -25,12 +25,14 @@ func (u *AdminUseCase) CreateAccount(admin *entities.Admin) (entities.Admin, err
 	err := u.repository.CreateAccount(admin)
 
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "Error 1062") {
-			if strings.HasSuffix(err.Error(), "email'") {
-				return entities.Admin{}, constants.ErrEmailAlreadyExist
-			} else if strings.HasSuffix(err.Error(), "username'") {
-				return entities.Admin{}, constants.ErrUsernameAlreadyExist
-			}
+		if strings.HasSuffix(err.Error(), "email'") {
+			return entities.Admin{}, constants.ErrEmailAlreadyExist
+		} else if strings.HasSuffix(err.Error(), "username'") {
+			return entities.Admin{}, constants.ErrUsernameAlreadyExist
+		} else if strings.HasSuffix(err.Error(), "REFERENCES `regencies` (`id`))") {
+			return entities.Admin{}, constants.ErrRegencyNotFound
+		} else if strings.HasSuffix(err.Error(), "REFERENCES `districts` (`id`))") {
+			return entities.Admin{}, constants.ErrDistrictNotFound
 		} else {
 			return entities.Admin{}, constants.ErrInternalServerError
 		}

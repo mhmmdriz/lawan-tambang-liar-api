@@ -3,6 +3,7 @@ package report
 import (
 	"lawan-tambang-liar/constants"
 	"lawan-tambang-liar/entities"
+	"strings"
 )
 
 type ReportUseCase struct {
@@ -29,7 +30,13 @@ func (u *ReportUseCase) Create(report *entities.Report) (entities.Report, error)
 	err := u.report_repository.Create(report)
 
 	if err != nil {
-		return entities.Report{}, constants.ErrInternalServerError
+		if strings.HasSuffix(err.Error(), "REFERENCES `regencies` (`id`))") {
+			return entities.Report{}, constants.ErrRegencyNotFound
+		} else if strings.HasSuffix(err.Error(), "REFERENCES `districts` (`id`))") {
+			return entities.Report{}, constants.ErrDistrictNotFound
+		} else {
+			return entities.Report{}, constants.ErrInternalServerError
+		}
 	}
 
 	return *report, nil

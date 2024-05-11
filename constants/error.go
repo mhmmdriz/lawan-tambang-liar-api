@@ -26,4 +26,6 @@ var (
 	ErrReportAlreadyRejected         = errors.New("report already rejected")
 	ErrReportAlreadyOnProgress       = errors.New("report already on progress")
 	ErrReportAlreadyFinished         = errors.New("report already finished")
+	ErrRegencyNotFound               = errors.New("regency not found")
+	ErrDistrictNotFound              = errors.New("district not found")
 )
