@@ -57,6 +57,10 @@ type AIReportAPIInterface interface {
 	GetChatCompletion(messages []map[string]string) (string, error)
 }
 
+type AdminReportRepositoryInterface interface {
+	GetByID(id int) (Admin, error)
+}
+
 type ReportUseCaseInterface interface {
 	Create(report *Report) (Report, error)
 	GetPaginated(limit int, page int, search string, filter map[string]interface{}, sortBy string, sortType string) ([]Report, error)

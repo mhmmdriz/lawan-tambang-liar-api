@@ -8,12 +8,12 @@ import (
 
 type ReportUseCase struct {
 	report_repository entities.ReportRepositoryInterface
-	admin_repository  entities.AdminRepositoryInterface
+	admin_repository  entities.AdminReportRepositoryInterface
 	gmaps_api         entities.GoogleMapsAPIInterface
 	ai_api            entities.AIReportSolutionAPIInterface
 }
 
-func NewReportUseCase(report_repository entities.ReportRepositoryInterface, admin_repository entities.AdminRepositoryInterface, gmaps_api entities.GoogleMapsAPIInterface, ai_api entities.AIReportAPIInterface) *ReportUseCase {
+func NewReportUseCase(report_repository entities.ReportRepositoryInterface, admin_repository entities.AdminReportRepositoryInterface, gmaps_api entities.GoogleMapsAPIInterface, ai_api entities.AIReportAPIInterface) *ReportUseCase {
 	return &ReportUseCase{
 		report_repository: report_repository,
 		admin_repository:  admin_repository,
