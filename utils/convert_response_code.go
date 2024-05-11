@@ -26,6 +26,8 @@ func ConvertResponseCode(err error) int {
 		constants.ErrReportAlreadyRejected,
 		constants.ErrReportAlreadyOnProgress,
 		constants.ErrReportAlreadyFinished,
+		constants.ErrRegencyNotFound,
+		constants.ErrDistrictNotFound,
 	}
 
 	if contains(badRequestErrors, err) {
