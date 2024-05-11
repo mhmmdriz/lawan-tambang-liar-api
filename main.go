@@ -52,6 +52,7 @@ func main() {
 
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
 
 	regencyAPI := regency_api.NewRegencyAPI()
 	regencyRepo := regency_rp.NewRegencyRepo(DB)
