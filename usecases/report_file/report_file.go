@@ -35,7 +35,7 @@ func (u *ReportFileUseCase) Create(files []*multipart.FileHeader, report_id int)
 	err := u.repository.Create(reportFiles)
 
 	if err != nil {
-		return []entities.ReportFile{}, err_upload
+		return []entities.ReportFile{}, err
 	}
 
 	// Convert []*entities.ReportFile to []entities.ReportFile
