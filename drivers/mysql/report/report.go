@@ -22,6 +22,10 @@ func (r *ReportRepo) Create(report *entities.Report) error {
 	if err := r.DB.Create(&report).Error; err != nil {
 		return err
 	}
+	if err := r.DB.Preload("User").Preload("Regency").Preload("District").First(&report, report.ID).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -68,7 +72,7 @@ func (r *ReportRepo) Update(report entities.Report) (entities.Report, error) {
 	// Check if the report exists
 	var reportDB entities.Report
 
-	if err := r.DB.First(&reportDB, report.ID).Error; err != nil {
+	if err := r.DB.Preload("User").Preload("Regency").Preload("District").First(&reportDB, report.ID).Error; err != nil {
 		return entities.Report{}, constants.ErrReportNotFound
 	}
 
@@ -89,6 +93,9 @@ func (r *ReportRepo) Update(report entities.Report) (entities.Report, error) {
 	}
 
 	report.Status = reportDB.Status
+	report.User = reportDB.User
+	report.Regency = reportDB.Regency
+	report.District = reportDB.District
 
 	return report, nil
 }
@@ -142,6 +149,48 @@ func (r *ReportRepo) UpdateStatus(reportID int, status string) error {
 	// Update the status of the report
 	if err := r.DB.First(&report, reportID).Error; err != nil {
 		return constants.ErrReportNotFound
+	}
+
+	if status == "verified" {
+		if status == report.Status {
+			return constants.ErrReportAlreadyVerified
+		} else if report.Status == "rejected" {
+			return constants.ErrReportAlreadyRejected
+		} else if report.Status == "on progress" {
+			return constants.ErrReportAlreadyOnProgress
+		} else if report.Status == "finished" {
+			return constants.ErrReportAlreadyFinished
+		}
+	} else if status == "rejected" {
+		if status == report.Status {
+			return constants.ErrReportAlreadyRejected
+		} else if report.Status == "verified" {
+			return constants.ErrReportAlreadyVerified
+		} else if report.Status == "on progress" {
+			return constants.ErrReportAlreadyOnProgress
+		} else if report.Status == "finished" {
+			return constants.ErrReportAlreadyFinished
+		}
+	} else if status == "on progress" {
+		if status == report.Status {
+			return constants.ErrReportAlreadyOnProgress
+		} else if report.Status == "finished" {
+			return constants.ErrReportAlreadyFinished
+		} else if report.Status == "rejected" {
+			return constants.ErrReportAlreadyRejected
+		} else if report.Status == "pending" {
+			return constants.ErrReportNotVerified
+		}
+	} else if status == "finished" {
+		if status == report.Status {
+			return constants.ErrReportAlreadyFinished
+		} else if report.Status == "verified" {
+			return constants.ErrReportProgressHasNotAdded
+		} else if report.Status == "rejected" {
+			return constants.ErrReportAlreadyRejected
+		} else if report.Status == "pending" {
+			return constants.ErrReportNotVerified
+		}
 	}
 
 	report.Status = status
@@ -198,4 +247,38 @@ func (r *ReportRepo) GetMetaData(limit int, page int, search string, filter map[
 	}
 
 	return metadata, nil
+}
+
+func (r *ReportRepo) IncreaseUpvote(reportID int) error {
+	var report entities.Report
+
+	// Increase the upvote count of the report
+	if err := r.DB.First(&report, reportID).Error; err != nil {
+		return constants.ErrReportNotFound
+	}
+
+	report.Upvotes++
+
+	if err := r.DB.Save(&report).Error; err != nil {
+		return constants.ErrInternalServerError
+	}
+
+	return nil
+}
+
+func (r *ReportRepo) DecreaseUpvote(reportID int) error {
+	var report entities.Report
+
+	// Decrease the upvote count of the report
+	if err := r.DB.First(&report, reportID).Error; err != nil {
+		return constants.ErrReportNotFound
+	}
+
+	report.Upvotes--
+
+	if err := r.DB.Save(&report).Error; err != nil {
+		return constants.ErrInternalServerError
+	}
+
+	return nil
 }

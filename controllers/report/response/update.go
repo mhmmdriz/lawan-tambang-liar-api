@@ -1,31 +1,34 @@
 package response
 
 import (
-	"lawan-tambang-liar/controllers/report_file/response"
+	district_response "lawan-tambang-liar/controllers/district/response"
+	regency_response "lawan-tambang-liar/controllers/regency/response"
+	report_file_response "lawan-tambang-liar/controllers/report_file/response"
+	user_response "lawan-tambang-liar/controllers/user/response"
 	"lawan-tambang-liar/entities"
 )
 
 type Update struct {
-	ID          int                    `json:"id"`
-	UserID      int                    `json:"user_id"`
-	Title       string                 `json:"title"`
-	Description string                 `json:"description"`
-	RegencyID   string                 `json:"regency_id"`
-	DistrictID  string                 `json:"district_id"`
-	Address     string                 `json:"address"`
-	Upvotes     int                    `json:"upvotes"`
-	Status      string                 `json:"status"`
-	Files       []*response.ReportFile `json:"files"`
+	ID          int                                `json:"id"`
+	User        *user_response.GetByID             `json:"user"`
+	Title       string                             `json:"title"`
+	Description string                             `json:"description"`
+	Regency     *regency_response.Regency          `json:"regency"`
+	District    *district_response.District        `json:"district"`
+	Address     string                             `json:"address"`
+	Upvotes     int                                `json:"upvotes"`
+	Status      string                             `json:"status"`
+	Files       []*report_file_response.ReportFile `json:"files"`
 }
 
 func UpdateFromEntitiesToResponse(report *entities.Report) *Update {
 	return &Update{
 		ID:          report.ID,
-		UserID:      report.UserID,
+		User:        user_response.GetByIDFromEntitiesToResponse(&report.User),
 		Title:       report.Title,
 		Description: report.Description,
-		RegencyID:   report.RegencyID,
-		DistrictID:  report.DistrictID,
+		Regency:     regency_response.FromUseCaseToResponse(&report.Regency),
+		District:    district_response.FromUseCaseToResponse(&report.District),
 		Address:     report.Address,
 		Upvotes:     report.Upvotes,
 		Status:      report.Status,

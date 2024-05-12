@@ -53,6 +53,18 @@ func (rc *ReportSolutionProcessController) Create(c echo.Context) error {
 		return c.JSON(utils.ConvertResponseCode(constants.ErrActionNotFound), base.NewErrorResponse(constants.ErrActionNotFound.Error()))
 	}
 
+	err3 := rc.reportUseCase.UpdateStatus(report_id, reportSolutionRequest.Status)
+	if err3 != nil {
+		return c.JSON(utils.ConvertResponseCode(err3), base.NewErrorResponse(err3.Error()))
+	}
+
+	reportSolution, err4 := rc.reportSolutionUseCase.Create(reportSolutionRequest.ToEntities())
+	if err4 != nil {
+		return c.JSON(utils.ConvertResponseCode(err4), base.NewErrorResponse(err4.Error()))
+	}
+
+	reportSolutionResponse := response_report_solution.CreateFromEntitiesToResponse(&reportSolution)
+
 	// Parse form-data multipart
 	form, err2 := c.MultipartForm()
 	if err2 != nil {
@@ -75,18 +87,6 @@ func (rc *ReportSolutionProcessController) Create(c echo.Context) error {
 	if totalFileSize > 10*1024*1024 {
 		return c.JSON(http.StatusBadRequest, base.NewErrorResponse(constants.ErrMaxFileSize.Error()))
 	}
-
-	err3 := rc.reportUseCase.UpdateStatus(report_id, reportSolutionRequest.Status)
-	if err3 != nil {
-		return c.JSON(utils.ConvertResponseCode(err3), base.NewErrorResponse(err3.Error()))
-	}
-
-	reportSolution, err4 := rc.reportSolutionUseCase.Create(reportSolutionRequest.ToEntities())
-	if err4 != nil {
-		return c.JSON(utils.ConvertResponseCode(err4), base.NewErrorResponse(err4.Error()))
-	}
-
-	reportSolutionResponse := response_report_solution.CreateFromEntitiesToResponse(&reportSolution)
 
 	reportSolutionFile, err5 := rc.reportSolutionFileUseCase.Create(files, reportSolution.ID)
 	if err5 != nil {
@@ -241,4 +241,15 @@ func (rc *ReportSolutionProcessController) Update(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Update Report Solution Process", reportSolutionResponse))
+}
+
+func (rc *ReportSolutionProcessController) GetMessageRecommendation(c echo.Context) error {
+	action := c.Param("action")
+
+	message, err := rc.reportSolutionUseCase.GetMessageRecommendation(action)
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Get Message Recommendation", message))
 }

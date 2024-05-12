@@ -7,12 +7,16 @@ import (
 )
 
 func GetUserIDFromJWT(c echo.Context) (int, error) {
-	// Get jwt from cookie
-	jwt, err := c.Cookie("JwtToken")
-	if err != nil {
+	// get JwtToken from authorization header
+	authorization := c.Request().Header.Get("Authorization")
+	if authorization == "" {
 		return 0, constants.ErrUnauthorized
 	}
-	jwt_payload, err := DecodePayload(jwt.Value)
+
+	// Get JWT Token from Authorization Header
+	jwtToken := GetToken(authorization)
+
+	jwt_payload, err := DecodePayload(jwtToken)
 	if err != nil {
 		return 0, constants.ErrInternalServerError
 	}

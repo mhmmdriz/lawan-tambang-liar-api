@@ -3,6 +3,7 @@ package google_cloud_storage
 import (
 	"context"
 	"io"
+	"lawan-tambang-liar/constants"
 	"lawan-tambang-liar/utils"
 	"mime/multipart"
 	"os"
@@ -71,14 +72,14 @@ func (f *FileUploadAPI) DeleteFile(filePaths []string) error {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(credentials)))
 	if err != nil {
-		return err
+		return constants.ErrFailedToCreateClient
 	}
 	defer client.Close()
 
 	for _, path := range filePaths {
 		obj := client.Bucket(bucketName).Object(path)
 		if err := obj.Delete(ctx); err != nil {
-			return err
+			return constants.ErrFailedToDeleteObject
 		}
 	}
 

@@ -49,6 +49,16 @@ type ReportRepositoryInterface interface {
 	AdminDelete(reportID int) (Report, error)
 	UpdateStatus(reportID int, status string) error
 	GetMetaData(limit int, page int, search string, filter map[string]interface{}) (Metadata, error)
+	IncreaseUpvote(reportID int) error
+	DecreaseUpvote(reportID int) error
+}
+
+type AIReportAPIInterface interface {
+	GetChatCompletion(messages []map[string]string) (string, error)
+}
+
+type AdminReportRepositoryInterface interface {
+	GetByID(id int) (Admin, error)
 }
 
 type ReportUseCaseInterface interface {
@@ -61,4 +71,7 @@ type ReportUseCaseInterface interface {
 	UpdateStatus(reportID int, status string) error
 	GetMetaData(limit int, page int, search string, filter map[string]interface{}) (Metadata, error)
 	GetDistanceDuration(reportID int, userID int) (DistanceMatrix, error)
+	GetDescriptionRecommendation(location string) (string, error)
+	IncreaseUpvote(reportID int) error
+	DecreaseUpvote(reportID int) error
 }

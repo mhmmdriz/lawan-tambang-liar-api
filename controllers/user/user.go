@@ -8,7 +8,6 @@ import (
 	"lawan-tambang-liar/utils"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -44,15 +43,6 @@ func (uc *UserController) Login(c echo.Context) error {
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
-
-	JwtToken := new(http.Cookie)
-	JwtToken.Name = "JwtToken"
-	JwtToken.Value = user.Token
-	JwtToken.HttpOnly = true
-	JwtToken.Secure = true
-	JwtToken.Path = "/"
-	JwtToken.Expires = time.Now().Add(time.Hour * 1)
-	c.SetCookie(JwtToken)
 
 	userResponse := response.LoginFromEntitiesToResponse(&user)
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success Login", userResponse))
