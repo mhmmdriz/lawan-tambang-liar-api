@@ -24,8 +24,9 @@ Lawan Tambang Liar API adalah sebuah project API(Back-End) yang dibuat untuk dig
 - Admin dapat melakukan verifikasi laporan yang telah dibuat oleh User
 - Admin dapat menambahkan progress penyelesaian laporan yang telah dibuat oleh User
 - Admin dapat menyelesaikan progress laporan yang telah dibuat oleh User
-- Admin dapat mengedit dan menghapus data penyelesaian laporan
+- Admin dapat mengedit dan menghapus data proses penyelesaian laporan
 - Admin dapat menghapus laporan yang telah dibuat oleh User
+- Admin dapat meminta rekomendasi pesan proses penyelesaian laporan dari AI ketika ingin menambahkan proses penyelesaian laporan
 
 ### User
 - User dapat melakukan registrasi
@@ -39,6 +40,7 @@ Lawan Tambang Liar API adalah sebuah project API(Back-End) yang dibuat untuk dig
 - User dapat mengedit data laporan yang telah dibuat
 - User dapat menghapus laporan yang telah dibuat
 - User dapat melihat proses penyelesaian laporan yang dilakukan Admin
+- User dapat meminta rekomendasi deskripsi laporan dari AI ketika ingin membuat laporan
 
 ## Tech Stacks
 sebutkan daftar tools dan framework yang digunakan dalam bentuk list seperti ini:
