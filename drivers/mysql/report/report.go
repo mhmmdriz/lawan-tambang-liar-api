@@ -178,14 +178,18 @@ func (r *ReportRepo) UpdateStatus(reportID int, status string) error {
 			return constants.ErrReportAlreadyFinished
 		} else if report.Status == "rejected" {
 			return constants.ErrReportAlreadyRejected
+		} else if report.Status == "pending" {
+			return constants.ErrReportNotVerified
 		}
 	} else if status == "finished" {
 		if status == report.Status {
 			return constants.ErrReportAlreadyFinished
 		} else if report.Status == "verified" {
-			return constants.ErrReportAlreadyVerified
+			return constants.ErrReportProgressHasNotAdded
 		} else if report.Status == "rejected" {
 			return constants.ErrReportAlreadyRejected
+		} else if report.Status == "pending" {
+			return constants.ErrReportNotVerified
 		}
 	}
 
