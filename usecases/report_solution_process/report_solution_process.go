@@ -35,7 +35,7 @@ func (u *ReportSolutionProcessUseCase) GetByReportID(reportID int) ([]entities.R
 	reportSolutionProcesses, err := u.repository.GetByReportID(reportID)
 
 	if err != nil {
-		return nil, constants.ErrInternalServerError
+		return []entities.ReportSolutionProcess{}, constants.ErrInternalServerError
 	}
 
 	return reportSolutionProcesses, nil
