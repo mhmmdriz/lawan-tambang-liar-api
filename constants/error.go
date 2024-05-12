@@ -28,4 +28,6 @@ var (
 	ErrReportAlreadyFinished         = errors.New("report already finished")
 	ErrRegencyNotFound               = errors.New("regency not found")
 	ErrDistrictNotFound              = errors.New("district not found")
+	ErrReportNotVerified             = errors.New("report not verified yet")
+	ErrReportProgressHasNotAdded     = errors.New("report progress has not added yet")
 )
