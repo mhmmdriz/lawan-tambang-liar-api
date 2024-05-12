@@ -35,7 +35,7 @@ func (u *ReportSolutionProcessFileUsecase) Create(files []*multipart.FileHeader,
 	err := u.repository.Create(reportFiles)
 
 	if err != nil {
-		return []entities.ReportSolutionProcessFile{}, err_upload
+		return []entities.ReportSolutionProcessFile{}, err
 	}
 
 	// Convert []*entities.ReportSolutionProcessFile to []entities.ReportSolutionProcessFile
